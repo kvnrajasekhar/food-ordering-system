@@ -1,36 +1,45 @@
 package com.feast.server_main.model;
 
 import jakarta.persistence.*;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "customers")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
-    @SequenceGenerator(name = "customer_seq", sequenceName = "customer_id_seq", allocationSize = 1)
-    @Column(name = "customer_id",columnDefinition = "NUMBER(19, 0)")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "customer_id")
     private Long customerId;
 
-    @Column(name = "name") // Explicit column name
+    @Column(name = "name", columnDefinition = "VARCHAR(255)")
     private String name;
 
-    @Column(name = "email") // Explicit column name
+    @Column(name = "email", columnDefinition = "VARCHAR(255)")
     private String email;
 
-    @Column(name = "phone_number",columnDefinition = "NUMBER(19, 0)") // Explicit column name
-    private Long phoneNumber;
+    @Column(name = "phone_number", columnDefinition = "VARCHAR(20)")
+    private String phoneNumber;
 
-    @Column(name = "password") // Explicit column name
+    @Column(name = "password", columnDefinition = "VARCHAR(255)")
     private String password;
 
-    @Column(name = "address") // Explicit column name
+    @Column(name = "address", columnDefinition = "VARCHAR(255)")
     private String address;
 
-    // Constructors
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> carts;
+
     public Customer() {
     }
 
-    public Customer(String name, String email, Long phoneNumber, String password, String address) {
+    public Customer(String name, String email, String phoneNumber, String password, String address) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -38,7 +47,6 @@ public class Customer {
         this.address = address;
     }
 
-    // Getters and Setters
     public Long getCustomerId() {
         return customerId;
     }
@@ -63,11 +71,11 @@ public class Customer {
         this.email = email;
     }
 
-    public Long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -87,13 +95,50 @@ public class Customer {
         this.address = address;
     }
 
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
+    public List<CartItem> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(List<CartItem> carts) {
+        this.carts = carts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(customerId, customer.customerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customerId);
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "customerId=" + customerId +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", phoneNumber=" + phoneNumber +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 '}';

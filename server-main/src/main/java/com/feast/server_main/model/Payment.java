@@ -1,7 +1,6 @@
 package com.feast.server_main.model;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "PaymentId")
-    private Integer paymentId;
+    private Long paymentId;
 
     @OneToOne
     @JoinColumn(name = "OrderId", nullable = false, unique = true)
@@ -24,16 +23,15 @@ public class Payment {
     @Column(name = "PaymentMethod", columnDefinition = "VARCHAR(255)")
     private String paymentMethod;
 
-    @Column(name = "TransactionId", columnDefinition = "NUMBER(19, 0)")
+    @Column(name = "TransactionId")
     private Long transactionId;
 
     @Column(name = "Amount")
-    private java.math.BigDecimal amount; // Recommended for currency
+    private BigDecimal amount; // Recommended for currency
 
     @Column(name = "Status", columnDefinition = "VARCHAR(255)")
     private String status;
 
-    // Constructors
     public Payment() {
     }
 
@@ -46,75 +44,60 @@ public class Payment {
         this.status = status;
     }
 
-    // Getters
-    public Integer getPaymentId() {
+    public Long getPaymentId() {
         return paymentId;
     }
 
-    public Order getOrderStatus() {
+    public void setPaymentId(Long paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public Order getOrder() {
         return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public Customer getCustomer() {
         return customer;
     }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public Long getTransactionId() {
-        return transactionId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    // Setters
-    public void setPaymentId(Integer paymentId) {
-        this.paymentId = paymentId;
-    }
-
-    public void setOrderStatus(Order order) {
-        this.order = order;
-    }
-
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
+    public Long getTransactionId() {
+        return transactionId;
+    }
+
     public void setTransactionId(Long transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
     }
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public String getStatus() {
+        return status;
     }
 
-    @Override
-    public String toString() {
-        return "Payment{" +
-                "paymentId=" + paymentId +
-                ", orderStatus=" + (order != null ? order.getOrderId() : null) +
-                ", customer=" + (customer != null ? customer.getCustomerId() : null) +
-                ", paymentMethod='" + paymentMethod + '\'' +
-                ", transactionId=" + transactionId +
-                ", amount=" + amount +
-                ", status='" + status + '\'' +
-                '}';
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
@@ -128,5 +111,18 @@ public class Payment {
     @Override
     public int hashCode() {
         return Objects.hash(paymentId);
+    }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "paymentId=" + paymentId +
+                ", order=" + (order != null ? order.getOrderId() : null) +
+                ", customer=" + (customer != null ? customer.getCustomerId() : null) +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", transactionId=" + transactionId +
+                ", amount=" + amount +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

@@ -7,17 +7,18 @@ import java.util.Objects;
 @Table(name = "carts")
 public class CartItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO) // Changed from AUTO to IDENTITY
     @Column(name = "CartId")
     private Integer cartId;
 
     @ManyToOne
-    @JoinColumn(name = "CustomerId", nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer; // Changed field name to 'customer'
 
     @ManyToOne
     @JoinColumn(name = "FoodId", nullable = false)
     private FoodItem foodItem;
+
 
     @Column(name = "Quantity")
     private Integer quantity;
@@ -37,7 +38,7 @@ public class CartItem {
         return cartId;
     }
 
-    public Customer getCustomer() {
+    public Customer getCustomer() { // Changed getter name
         return customer;
     }
 
@@ -54,7 +55,7 @@ public class CartItem {
         this.cartId = cartId;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(Customer customer) { // Changed setter name
         this.customer = customer;
     }
 
@@ -68,20 +69,16 @@ public class CartItem {
 
     @Override
     public String toString() {
-        return "Cart{" +
-                "cartId=" + cartId +
-                ", customer=" + (customer != null ? customer.getCustomerId() : null) +
-                ", foodItem=" + (foodItem != null ? foodItem.getFoodId() : null) +
-                ", quantity=" + quantity +
-                '}';
+        return "CartItem [cartId=" + cartId + ", customer=" + customer + ", foodItem=" + foodItem + ", quantity="
+                + quantity + "]";
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CartItem cart = (CartItem) o;
-        return Objects.equals(cartId, cart.cartId);
+        CartItem cartItem = (CartItem) o;
+        return Objects.equals(cartId, cartItem.cartId);
     }
 
     @Override

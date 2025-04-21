@@ -1,6 +1,7 @@
 package com.feast.server_main.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -9,7 +10,7 @@ public class FoodItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FoodId")
-    private Integer foodId;
+    private Long foodId;
 
     @Column(name = "FoodName", columnDefinition = "VARCHAR(255)")
     private String foodName;
@@ -26,7 +27,9 @@ public class FoodItem {
     @Column(name = "ImageURL", columnDefinition = "VARCHAR(255)")
     private String imageURL;
 
-    // Constructors
+    @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartItem> carts;
+
     public FoodItem() {
     }
 
@@ -38,59 +41,78 @@ public class FoodItem {
         this.imageURL = imageURL;
     }
 
-    // Getters
-    public Integer getFoodId() {
+    public Long getFoodId() {
         return foodId;
+    }
+
+    public void setFoodId(Long foodId) {
+        this.foodId = foodId;
     }
 
     public String getFoodName() {
         return foodName;
     }
 
-    public String getResName() {
-        return resName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    // Setters
-    public void setFoodId(Integer foodId) {
-        this.foodId = foodId;
-    }
-
     public void setFoodName(String foodName) {
         this.foodName = foodName;
+    }
+
+    public String getResName() {
+        return resName;
     }
 
     public void setResName(String resName) {
         this.resName = resName;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Float getPrice() {
+        return price;
     }
 
     public void setPrice(Float price) {
         this.price = price;
     }
 
+    public String getImageURL() {
+        return imageURL;
+    }
+
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
 
+    public List<CartItem> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(List<CartItem> carts) {
+        this.carts = carts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodItem foodItem = (FoodItem) o;
+        return Objects.equals(foodId, foodItem.foodId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(foodId);
+    }
+
     @Override
     public String toString() {
-        return "FoodItems{" +
+        return "FoodItem{" +
                 "foodId=" + foodId +
                 ", foodName='" + foodName + '\'' +
                 ", resName='" + resName + '\'' +
@@ -98,18 +120,5 @@ public class FoodItem {
                 ", price=" + price +
                 ", imageURL='" + imageURL + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FoodItem foodItems = (FoodItem) o;
-        return Objects.equals(foodId, foodItems.foodId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(foodId);
     }
 }
