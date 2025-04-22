@@ -26,7 +26,7 @@ public class UserService {
 	public User updateProfile(User user) {
 		return userRepository.save(user);
 	}
-	public Optional<User> getUserById(Long id){
+	public Optional<User> getUserById(Integer id){
 		return userRepository.findById(id);
 	}
 	
