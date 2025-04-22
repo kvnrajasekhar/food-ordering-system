@@ -10,7 +10,7 @@ public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ResId")
-    private Long resId;
+    private Integer resId;
 
     @Column(name = "ResName", columnDefinition = "VARCHAR(255)")
     private String resName;
@@ -45,8 +45,8 @@ public class Restaurant {
         return resId;
     }
 
-    public void setResId(Long resId) {
-        this.resId = resId;
+    public void setResId(Integer restaurantId) {
+        this.resId = restaurantId;
     }
 
     public String getResName() {

@@ -13,7 +13,7 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer; // Changed field name to 'customer'
+    private User customer; // Changed field name to 'customer'
 
     @ManyToOne
     @JoinColumn(name = "FoodId", nullable = false)
@@ -27,7 +27,7 @@ public class CartItem {
     public CartItem() {
     }
 
-    public CartItem(Customer customer, FoodItem foodItem, Integer quantity) {
+    public CartItem(User customer, FoodItem foodItem, Integer quantity) {
         this.customer = customer;
         this.foodItem = foodItem;
         this.quantity = quantity;
@@ -38,7 +38,7 @@ public class CartItem {
         return cartId;
     }
 
-    public Customer getCustomer() { // Changed getter name
+    public User getCustomer() { // Changed getter name
         return customer;
     }
 
@@ -55,7 +55,7 @@ public class CartItem {
         this.cartId = cartId;
     }
 
-    public void setCustomer(Customer customer) { // Changed setter name
+    public void setCustomer(User customer) { // Changed setter name
         this.customer = customer;
     }
 

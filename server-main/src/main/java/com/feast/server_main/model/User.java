@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "customers")
-public class Customer {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "customer_id")
@@ -36,10 +36,10 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> carts;
 
-    public Customer() {
+    public User() {
     }
 
-    public Customer(String name, String email, String phoneNumber, String password, String address) {
+    public User(String name, String email, String phoneNumber, String password, String address) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -123,7 +123,7 @@ public class Customer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Customer customer = (Customer) o;
+        User customer = (User) o;
         return Objects.equals(customerId, customer.customerId);
     }
 

@@ -14,7 +14,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "CustomerId", nullable = false)
-    private Customer customer;
+    private User customer;
 
     @ManyToOne
     @JoinColumn(name = "ResId", nullable = false)
@@ -38,7 +38,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Customer customer, Restaurant restaurant, Float totalPrice, LocalDateTime date, String status) {
+    public Order(User customer, Restaurant restaurant, Float totalPrice, LocalDateTime date, String status) {
         this.customer = customer;
         this.restaurant = restaurant;
         this.totalPrice = totalPrice;
@@ -54,11 +54,11 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Customer getCustomer() {
+    public User getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(User customer) {
         this.customer = customer;
     }
 

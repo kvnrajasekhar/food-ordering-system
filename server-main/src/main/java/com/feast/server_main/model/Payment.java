@@ -18,7 +18,7 @@ public class Payment {
 
     @ManyToOne
     @JoinColumn(name = "CustomerId", nullable = false)
-    private Customer customer;
+    private User customer;
 
     @Column(name = "PaymentMethod", columnDefinition = "VARCHAR(255)")
     private String paymentMethod;
@@ -35,7 +35,7 @@ public class Payment {
     public Payment() {
     }
 
-    public Payment(Order order, Customer customer, String paymentMethod, Long transactionId, BigDecimal amount, String status) {
+    public Payment(Order order, User customer, String paymentMethod, Long transactionId, BigDecimal amount, String status) {
         this.order = order;
         this.customer = customer;
         this.paymentMethod = paymentMethod;
@@ -60,11 +60,11 @@ public class Payment {
         this.order = order;
     }
 
-    public Customer getCustomer() {
+    public User getCustomer() {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
+    public void setCustomer(User customer) {
         this.customer = customer;
     }
 

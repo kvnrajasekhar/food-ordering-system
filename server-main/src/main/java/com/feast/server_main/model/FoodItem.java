@@ -10,7 +10,7 @@ public class FoodItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FoodId")
-    private Long foodId;
+    private Integer foodId;
 
     @Column(name = "FoodName", columnDefinition = "VARCHAR(255)")
     private String foodName;
@@ -45,8 +45,8 @@ public class FoodItem {
         return foodId;
     }
 
-    public void setFoodId(Long foodId) {
-        this.foodId = foodId;
+    public void setFoodId(Integer foodId2) {
+        this.foodId = foodId2;
     }
 
     public String getFoodName() {

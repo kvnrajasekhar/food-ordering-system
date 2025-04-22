@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="checkout.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 
   </head>
@@ -98,16 +99,17 @@
                                 <div class='thin dense' style="margin-bottom: 10px;">Delivery</div>
                                 TOTAL
                             </span><br>
-                            <span style="float:right; text-align:right; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;"><br>
+                            <span style="float:right; text-align:right; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" id="finalTotalAmount"><br>
                                 <div class='thin dense' id="Discount" style="text-decoration-line: line-through;">59/-</div><br><br><br>
                                 ₹2192.56
                             </span>
                         </div>
                     </div>
                 </div>
-            <div class='credit-info'>
+                <div class='credit-info'>
                 <div class='credit-info-content'>
-                      <img src='../feast_plus/img/logo-light.png' height='80' class='credit-card-image' id='credit-card-image'><br>
+                    <img src="img/11338483.jpg">
+                   <!--  <img src='../feast_plus/img/logo-light.png' height='80' class='credit-card-image' id='credit-card-image'><br>
                       <h6>Card Number</h6>
                       <input class='input-field' placeholder="6758 XXXX XXXX XXXX"></input>
                       <h6>Name on the Card</h6> 
@@ -123,8 +125,8 @@
                             <input class='input-field' type="password"></input><br>
                           </td>
                         </tr>
-                      </table><br>
-                      <button  class='pay-btn'><a href="../delivery/delivery.html">checkout</a></button>
+                      </table><br> -->
+                      <button  class='pay-btn' id="rzp-button1">checkout</button>
                 </div>
             </div>
     </div>
