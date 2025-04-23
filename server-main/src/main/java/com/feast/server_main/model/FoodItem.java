@@ -1,22 +1,21 @@
 package com.feast.server_main.model;
 
 import jakarta.persistence.*;
-import java.util.List;
-import java.util.Objects;
 
 @Entity
-@Table(name = "food_items")
+@Table(name = "FoodItems")
 public class FoodItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "FoodId")
-    private Long foodId;
+    private Integer foodId;
 
     @Column(name = "FoodName", columnDefinition = "VARCHAR(255)")
     private String foodName;
 
-    @Column(name = "ResName", columnDefinition = "VARCHAR(255)")
-    private String resName;
+    @ManyToOne
+    @JoinColumn(name = "RestaurantId")
+    private Restaurant restaurant; 
 
     @Column(name = "Description", columnDefinition = "VARCHAR(255)")
     private String description;
@@ -27,25 +26,27 @@ public class FoodItem {
     @Column(name = "ImageURL", columnDefinition = "VARCHAR(255)")
     private String imageURL;
 
-    @OneToMany(mappedBy = "foodItem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CartItem> carts;
+    @Column(name = "Rating")
+    private Double rating; 
 
     public FoodItem() {
     }
 
-    public FoodItem(String foodName, String resName, String description, Float price, String imageURL) {
+    public FoodItem(Integer foodId, String foodName, Restaurant restaurant, String description, Float price, String imageURL, Double rating) {
+        this.foodId = foodId;
         this.foodName = foodName;
-        this.resName = resName;
+        this.restaurant = restaurant;
         this.description = description;
         this.price = price;
         this.imageURL = imageURL;
+        this.rating = rating;
     }
 
-    public Long getFoodId() {
+    public Integer getFoodId() {
         return foodId;
     }
 
-    public void setFoodId(Long foodId) {
+    public void setFoodId(Integer foodId) {
         this.foodId = foodId;
     }
 
@@ -57,12 +58,12 @@ public class FoodItem {
         this.foodName = foodName;
     }
 
-    public String getResName() {
-        return resName;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
-    public void setResName(String resName) {
-        this.resName = resName;
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     public String getDescription() {
@@ -89,36 +90,16 @@ public class FoodItem {
         this.imageURL = imageURL;
     }
 
-    public List<CartItem> getCarts() {
-        return carts;
+    public Double getRating() {
+        return rating;
     }
 
-    public void setCarts(List<CartItem> carts) {
-        this.carts = carts;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FoodItem foodItem = (FoodItem) o;
-        return Objects.equals(foodId, foodItem.foodId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(foodId);
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 
     @Override
     public String toString() {
-        return "FoodItem{" +
-                "foodId=" + foodId +
-                ", foodName='" + foodName + '\'' +
-                ", resName='" + resName + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", imageURL='" + imageURL + '\'' +
-                '}';
+        return "FoodItem [foodId=" + foodId + ", foodName=" + foodName + ", restaurant=" + restaurant + ", description=" + description + ", price=" + price + ", imageURL=" + imageURL + ", rating=" + rating + "]";
     }
 }
