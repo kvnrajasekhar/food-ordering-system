@@ -183,13 +183,11 @@ ul li:hover {
   }
 }
 
-.pay-btn:hover {
+#rzp-button1:hover {
   background: black;
   a{
-    text-decoration: none;
-    color: #ffc107;
-  }
-
+    text-decoration: none;  }
+  color: #ffc107;
   transition: all 0.2s ease;
 }
 

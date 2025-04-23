@@ -2,80 +2,82 @@ package com.feast.server_main.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Table(name = "order_status")
+@Table(name = "Orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "OrderId")
-    private Long orderId;
+    private Integer orderId;
 
     @ManyToOne
-    @JoinColumn(name = "CustomerId", nullable = false)
-    private Customer customer;
+    @JoinColumn(name = "UserId", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "ResId", nullable = false)
-    private Restaurant restaurant;
+    @JoinColumn(name = "FoodId", nullable = false)
+    private FoodItem foodItem;
 
     @Column(name = "TotalPrice")
-    private Float totalPrice;
+    private Double totalPrice;
+
+    @Column(name = "Quantity", columnDefinition = "VARCHAR(255)")
+    private String quantity;
 
     @Column(name = "OrderDate")
     private LocalDateTime date;
 
-    @Column(name = "Status", columnDefinition = "VARCHAR(255)")
-    private String status;
-
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Payment payment;
-
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Delivery delivery;
-
     public Order() {
     }
 
-    public Order(Customer customer, Restaurant restaurant, Float totalPrice, LocalDateTime date, String status) {
-        this.customer = customer;
-        this.restaurant = restaurant;
+    public Order(Integer orderId, User user, FoodItem foodItem, Double totalPrice, String quantity, LocalDateTime date) {
+        this.orderId = orderId;
+        this.user = user;
+        this.foodItem = foodItem;
         this.totalPrice = totalPrice;
+        this.quantity = quantity;
         this.date = date;
-        this.status = status;
     }
 
-    public Long getOrderId() {
+    public Integer getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
+    public FoodItem getFoodItem() {
+        return foodItem;
     }
 
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
+    public void setFoodItem(FoodItem foodItem) {
+        this.foodItem = foodItem;
     }
 
-    public Float getTotalPrice() {
+    public Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Float totalPrice) {
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
     }
 
     public LocalDateTime getDate() {
@@ -86,52 +88,8 @@ public class Order {
         this.date = date;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
-    }
-
-    public Delivery getDelivery() {
-        return delivery;
-    }
-
-    public void setDelivery(Delivery delivery) {
-        this.delivery = delivery;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(orderId, order.orderId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(orderId);
-    }
-
     @Override
     public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
-                ", customer=" + (customer != null ? customer.getCustomerId() : null) +
-                ", restaurant=" + (restaurant != null ? restaurant.getResId() : null) +
-                ", totalPrice=" + totalPrice +
-                ", date=" + date +
-                ", status='" + status + '\'' +
-                '}';
+        return "Order [orderId=" + orderId + ", user=" + user + ", foodItem=" + foodItem + ", totalPrice=" + totalPrice + ", quantity=" + quantity + ", date=" + date + "]";
     }
 }
