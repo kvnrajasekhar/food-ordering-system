@@ -48,17 +48,9 @@
   color: var(--text-light);
 }
 
-.nav-search{
-  border: 1px solid var(--primary);
-  color: var(--primary);
+#logout-icon{
+  margin-top: 6px;
 }
-
-.nav-search:focus, .nav-search:hover  {
-  border: 1px solid var(--primary);
-  background-color: var(--primary);
-  color: var(--text-light);
-}
-
 
 /*========================================================
           Container Styles

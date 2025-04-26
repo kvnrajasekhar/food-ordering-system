@@ -63,105 +63,164 @@ $(document).ready(function() {
 
 
 
-document.addEventListener("DOMContentLoaded", () => {
+// document.addEventListener("DOMContentLoaded", () => {
 
-    const menuItems = [
-        {
-          id: 1,
-          name: "McDonald's",
-          description: "Fast Food restaurant located at 123 Main St, Chennai",
-          price: 5.99, // Example price, as restaurants might not have a fixed price
-          distance: "2 km",
-          image: "../restaurant-menu/food-images/mcd.jpg",
-          rating: 4.2,
-          cuisine: "Fast Food",
-          menuUrl: "/restaurant/mcdonalds",
-          ingredients: ["Burger Patty", "Lettuce", "Cheese", "Bun"] // Example ingredients
-        },
-        {
-          id: 2,
-          name: "Domino's Pizza",
-          description: "Pizza restaurant located at 456 Elm St, Chennai",
-          price: 8.99, // Example price
-          distance: "3 km",
-          image: "../restaurant-menu//food-images/dominos.jpg",
-          rating: 4.5,
-          cuisine: "Pizza",
-          menuUrl: "/restaurant/dominos",
-          ingredients: ["Cheese", "Tomato Sauce", "Pepperoni", "Dough"] // Example ingredients
-        },
-        {
-          id: 3,
-          name: "Cafe Coffee Day",
-          description: "Cafe located at 789 Oak St, Chennai",
-          price: 4.99, // Example price
-          distance: "1.5 km",
-          image: "../restaurant-menu//food-images/cafe coffe.png",
-          rating: 3.9,
-          cuisine: "Cafe",
-          menuUrl: "/restaurant/ccd",
-          ingredients: ["Coffee Beans", "Milk", "Sugar", "Water"] // Example ingredients
-        }
-      ];
+//     const menuItems = [
+//         {
+//           id: 1,
+//           name: "McDonald's",
+//           description: "Fast Food restaurant located at 123 Main St, Chennai",
+//           price: 5.99, // Example price, as restaurants might not have a fixed price
+//           distance: "2 km",
+//           image: "../restaurant-menu/food-images/mcd.jpg",
+//           rating: 4.2,
+//           cuisine: "Fast Food",
+//           menuUrl: "/restaurant/mcdonalds",
+//           ingredients: ["Burger Patty", "Lettuce", "Cheese", "Bun"] // Example ingredients
+//         },
+//         {
+//           id: 2,
+//           name: "Domino's Pizza",
+//           description: "Pizza restaurant located at 456 Elm St, Chennai",
+//           price: 8.99, // Example price
+//           distance: "3 km",
+//           image: "../restaurant-menu//food-images/dominos.jpg",
+//           rating: 4.5,
+//           cuisine: "Pizza",
+//           menuUrl: "/restaurant/dominos",
+//           ingredients: ["Cheese", "Tomato Sauce", "Pepperoni", "Dough"] // Example ingredients
+//         },
+//         {
+//           id: 3,
+//           name: "Cafe Coffee Day",
+//           description: "Cafe located at 789 Oak St, Chennai",
+//           price: 4.99, // Example price
+//           distance: "1.5 km",
+//           image: "../restaurant-menu//food-images/cafe coffe.png",
+//           rating: 3.9,
+//           cuisine: "Cafe",
+//           menuUrl: "/restaurant/ccd",
+//           ingredients: ["Coffee Beans", "Milk", "Sugar", "Water"] // Example ingredients
+//         }
+//       ];
       
 
-    const menuContainer = document.getElementById("menu-items");
+//     const menuContainer = document.getElementById("menu-items");
 
-    function renderMenu() {
+//     function renderMenu() {
+//         menuContainer.innerHTML = "";
+//         menuItems.forEach(item => {
+//             const col = document.createElement("div");
+//             col.className = "col-md-4 mb-4";
+
+//             col.innerHTML = `
+//                 <div class="card menu-card">
+//                     <img src="${item.image}" class="card-img-top" alt="${item.name}">
+//                     <div class="card-body">
+//                         <h5 class="card-title">${item.name}</h5>
+//                         <p class="card-text">${item.description}</p>
+//                         <div class="d-flex justify-content-between align-items-center">
+//                             <span class=" fw-bold item-price">$${item.price.toFixed(2)}</span>
+//                             <button class="btn btn-primary cart-btn" onclick="openItemModal(${item.id})">
+//                                 <i class="fas fa-info-circle"></i> View Details
+//                             </button>
+//                         </div>
+//                     </div>
+//                 </div>
+//             `;
+
+//             menuContainer.appendChild(col);
+//         });
+//     }
+
+//     window.openItemModal = (itemId) => {
+//         const item = menuItems.find(i => i.id === itemId);
+//         if (!item) return;
+
+//         document.getElementById("itemModalLabel").textContent = item.name;
+//         document.getElementById("item-image").src = item.image;
+//         document.getElementById("item-description").textContent = item.description;
+//         document.getElementById("item-price").textContent = `$${item.price.toFixed(2)}`;
+
+//         const ingredientsList = document.getElementById("item-ingredients");
+//         ingredientsList.innerHTML = "";
+//         item.ingredients.forEach(ing => {
+//             const li = document.createElement("li");
+//             li.textContent = ing;
+//             ingredientsList.appendChild(li);
+//         });
+
+//         document.getElementById("add-to-cart").onclick = () =>  window.location.href = "../products/product.html";
+
+//         const modal = new bootstrap.Modal(document.getElementById("itemModal"));
+//         modal.show();
+//     };
+
+//     renderMenu();
+// });
+
+
+
+// cart section
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    const menuContainer = document.getElementById("menu-items");
+    const staticImageUrl = "../restaurant-menu/food-images/mcd.jpg";
+
+    function fetchAndRenderRestaurants() {
+        fetch('http://localhost:8081/customer/restaurants')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(restaurants => {
+                renderRestaurants(restaurants);
+            })
+            .catch(error => {
+                console.error("Error fetching restaurant data:", error);
+                menuContainer.innerHTML = "<p class='error-message'>Error loading restaurants.</p>";
+            });
+    }
+
+    function renderRestaurants(restaurants) {
         menuContainer.innerHTML = "";
-        menuItems.forEach(item => {
+        restaurants.forEach(restaurant => {
             const col = document.createElement("div");
             col.className = "col-md-4 mb-4";
 
             col.innerHTML = `
                 <div class="card menu-card">
-                    <img src="${item.image}" class="card-img-top" alt="${item.name}">
+                    <img src="${staticImageUrl}" class="card-img-top" alt="${restaurant.resName}">
                     <div class="card-body">
-                        <h5 class="card-title">${item.name}</h5>
-                        <p class="card-text">${item.description}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class=" fw-bold item-price">$${item.price.toFixed(2)}</span>
-                            <button class="btn btn-primary cart-btn" onclick="openItemModal(${item.id})">
-                                <i class="fas fa-info-circle"></i> View Details
-                            </button>
-                        </div>
+                        <h5 class="card-title restaurant-name">${restaurant.resName}</h5>
+                        <p class="card-text restaurant-address">Address: ${restaurant.address}</p>
+                        <p class="card-text restaurant-cuisine">Cuisine: ${restaurant.cuisine}</p>
+                        <button class="btn btn-primary view-menu-btn" data-restaurant-id="${restaurant.restaurantId}">View Menu</button>
                     </div>
                 </div>
             `;
 
             menuContainer.appendChild(col);
         });
+
+        // Add event listeners to the "View Menu" buttons after they are rendered
+        const viewMenuButtons = document.querySelectorAll('.view-menu-btn');
+        viewMenuButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const restaurantId = this.dataset.restaurantId;
+                // Change the window location to the products page for the clicked restaurant
+                window.location.href = `/client/products/product.html?restaurantId=${restaurantId}`;
+            });
+        });
     }
 
-    window.openItemModal = (itemId) => {
-        const item = menuItems.find(i => i.id === itemId);
-        if (!item) return;
-
-        document.getElementById("itemModalLabel").textContent = item.name;
-        document.getElementById("item-image").src = item.image;
-        document.getElementById("item-description").textContent = item.description;
-        document.getElementById("item-price").textContent = `$${item.price.toFixed(2)}`;
-
-        const ingredientsList = document.getElementById("item-ingredients");
-        ingredientsList.innerHTML = "";
-        item.ingredients.forEach(ing => {
-            const li = document.createElement("li");
-            li.textContent = ing;
-            ingredientsList.appendChild(li);
-        });
-
-        document.getElementById("add-to-cart").onclick = () =>  window.location.href = "../products/product.html";
-
-        const modal = new bootstrap.Modal(document.getElementById("itemModal"));
-        modal.show();
-    };
-
-    renderMenu();
+    fetchAndRenderRestaurants();
 });
 
-
-
-// cart section
 const cartItems = [
     { id: 1, name: "Pizza", price: 10.99, quantity: 1, image: "../products/img/Pizzeria Delights.jfif" },
     { id: 2, name: "Burger", price: 7.49, quantity: 2, image: "../products/img/Burger.jfif" }
