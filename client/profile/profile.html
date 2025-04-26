@@ -13,9 +13,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="profile.css" />
   </head>
   <body>
+
     <nav class="navbar navbar-expand-lg bg-black fixed-top">
       <div class="container-fluid py-1">
         <a class="navbar-brand" href="../feast_plus/index.html"
@@ -68,21 +69,14 @@
                 <a class="nav-link" href="../restaurant-menu/resto.html">Restaurants</a>
               </li>
             </ul>
-            <form class="d-flex mt-3 mt-lg-0" role="search">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success nav-search" type="submit">
-                Search
-              </button>
-            </form>
+            <a class="nav-link" href="#" id="logout-icon">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
           </div>
         </div>
       </div>
     </nav>
+    
     <div class="profile-card">
       <div class="box-main">
       <!-- Display User Profile -->
@@ -285,6 +279,6 @@
           document.getElementById("profileSection").style.display = "block";
         });
     </script>
-    <script src="script.js"></script>
+    <script src="profile.js"></script>
   </body>
 </html>

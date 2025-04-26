@@ -3,7 +3,7 @@ package com.feast.server_main.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Restaurants")
+@Table(name = "restaurants")
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

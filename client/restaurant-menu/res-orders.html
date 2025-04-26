@@ -10,79 +10,27 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="res-orders.css" />
+    <link rel="stylesheet" href="../layouts/nav.css">
+    <link rel="stylesheet" href="../layouts/footer.css">
+    <script>
+      fetch('../layouts/nav.html')
+          .then(response => response.text())
+          .then(navbarHTML => {
+              document.getElementById('navbar-container').innerHTML = navbarHTML;
+          });
+    </script>
+    <script>
+      fetch('../layouts/footer.html')
+          .then(response => response.text())
+          .then(footerHTML => {
+              document.getElementById('footer-container').innerHTML = footerHTML;
+          });
+    </script>
+
   </head>
   <body>
 
-    <nav class="navbar navbar-expand-lg bg-black fixed-top">
-      <div class="container-fluid py-1">
-        <a class="navbar-brand" href="../feast_plus/index.html"
-          ><img src="../feast_plus/img/logo-dark.png" class="brand-logo"
-        /></a>
-        <button
-          class="navbar-toggler toggler-btn"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasNavbar"
-          aria-controls="offcanvasNavbar"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div
-          class="offcanvas offcanvas-end bg-black"
-          tabindex="-1"
-          id="offcanvasNavbar"
-          aria-labelledby="offcanvasNavbarLabel"
-        >
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title nav-link" id="offcanvasNavbarLabel">
-              Feast+
-            </h5>
-            <button
-              type="button"
-              class="btn-close bg-white"
-              data-bs-dismiss="offcanvas"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="offcanvas-body">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto">
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  aria-current="page"
-                  href="../feast_plus/index.html"
-                  >Home</a
-                >
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="../restaurant-menu/res-orders.html">Orders</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="../profile/profile.html">Profile</a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="../restaurant-menu/res-items.html">Manage Items</a>
-              </li>
-            </ul>
-            <form class="d-flex mt-3 mt-lg-0" role="search">
-              <input
-                class="form-control me-2"
-                type="search"
-                placeholder="Search"
-                aria-label="Search"
-              />
-              <button class="btn btn-outline-success nav-search" type="submit">
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-
-
+    <div id="navbar-container"></div>
 
 
     <div class="container mt-5">
@@ -254,135 +202,8 @@
         });
       });
     </script>
-    <!-- footer section -->
-    <footer class="footer-section">
-      <div class="container">
-        <div class="footer-cta pt-5 pb-5">
-          <div class="row">
-            <div class="col-xl-4 col-md-4 mb-30">
-              <div class="single-cta">
-                <i class="fas fa-map-marker-alt footer-row-icon"></i>
-                <div class="cta-text">
-                  <h4>Find us</h4>
-                  <span>SIPCOT IT Park, Chennai</span>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-4 col-md-4 mb-30">
-              <div class="single-cta">
-                <i class="fas fa-phone footer-row-icon"></i>
-                <div class="cta-text">
-                  <h4>Call us</h4>
-                  <span>+91 7744339128</span>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-4 col-md-4 mb-30">
-              <div class="single-cta">
-                <i class="far fa-envelope-open footer-row-icon"></i>
-                <div class="cta-text">
-                  <h4>Mail us</h4>
-                  <span>mail@info.com</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="footer-content pt-5 pb-5">
-          <div class="row">
-            <div class="col-xl-4 col-lg-4 mb-50">
-              <div class="footer-widget">
-                <div class="footer-logo">
-                  <a href="index.html"
-                    ><img
-                      src="../feast_plus/img/logo-dark.png"
-                      class="img-fluid"
-                      alt="logo"
-                  /></a>
-                </div>
-                <div class="footer-text">
-                  <p>
-                    Lorem ipsum dolor sit amet, consec tetur adipisicing elit,
-                    sed do eiusmod tempor incididuntut consec tetur adipisicing
-                    elit,Lorem ipsum dolor sit amet.
-                  </p>
-                </div>
-                <div class="footer-social-icon">
-                  <span>Follow us</span>
-                  <a href="#"><i class="fab fa-facebook-f facebook-bg"></i></a>
-                  <a href="#"><i class="fab fa-twitter twitter-bg"></i></a>
-                  <a href="#"><i class="fab fa-google-plus-g google-bg"></i></a>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6 mb-30">
-              <div class="footer-widget">
-                <div class="footer-widget-heading">
-                  <h3>Useful Links</h3>
-                </div>
-                <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">about</a></li>
-                  <li><a href="#">services</a></li>
-                  <li><a href="#">portfolio</a></li>
-                  <li><a href="#">Contact</a></li>
-                  <li><a href="#">About us</a></li>
-                  <li><a href="#">Our Services</a></li>
-                  <li><a href="#">Expert Team</a></li>
-                  <li><a href="#">Contact us</a></li>
-                  <li><a href="#">Latest News</a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-xl-4 col-lg-4 col-md-6 mb-50">
-              <div class="footer-widget">
-                <div class="footer-widget-heading">
-                  <h3>Subscribe</h3>
-                </div>
-                <div class="footer-text mb-25">
-                  <p>
-                    Don’t miss to subscribe to our new feeds, kindly fill the
-                    form below.
-                  </p>
-                </div>
-                <div class="subscribe-form">
-                  <form action="#">
-                    <input type="text" placeholder="Email Address" />
-                    <button><i class="fab fa-telegram-plane"></i></button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="copyright-area">
-        <div class="container">
-          <div class="row">
-            <div class="col-xl-6 col-lg-6 text-center text-lg-left">
-              <div class="copyright-text">
-                <p>
-                  Copyright &copy; 2025, All Right Reserved
-                  <span>@foodery</span>
-                </p>
-              </div>
-            </div>
-            <div class="col-xl-6 col-lg-6 d-none d-lg-block text-right">
-              <div class="footer-menu">
-                <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Terms</a></li>
-                  <li><a href="#">Privacy</a></li>
-                  <li><a href="#">Policy</a></li>
-                  <li><a href="#">Contact</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
 
-
+    <div id="footer-container"></div>
+    
   </body>
 </html>
