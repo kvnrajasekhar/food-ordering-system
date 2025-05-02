@@ -1,22 +1,24 @@
 package com.feast.server_main.dto;
 
+import com.feast.server_main.model.User;
 
 public class RestaurantDTO {
 	
     private Integer restaurantId;
-
-    private String resName;
-
+    private User user;
+    private String restaurantName;
     private String address;
-
     private String cuisine;
-
     private String ownerName;
 
-	public RestaurantDTO(Integer restaurantId, String resName, String address, String cuisine, String ownerName) {
+    public RestaurantDTO() {
+    	
+    }
+	public RestaurantDTO(Integer restaurantId,User user, String restaurantName, String address, String cuisine, String ownerName) {
 		super();
 		this.restaurantId = restaurantId;
-		this.resName = resName;
+		this.user = user;
+		this.restaurantName = restaurantName;
 		this.address = address;
 		this.cuisine = cuisine;
 		this.ownerName = ownerName;
@@ -29,13 +31,21 @@ public class RestaurantDTO {
 	public void setRestaurantId(Integer restaurantId) {
 		this.restaurantId = restaurantId;
 	}
-
-	public String getResName() {
-		return resName;
+	
+	public User getUser() {
+		return user;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public void setResName(String resName) {
-		this.resName = resName;
+	public String getRestaurantName() {
+		return restaurantName;
+	}
+
+	public void setRestaurantName(String restaurantName) {
+		this.restaurantName = restaurantName;
 	}
 
 	public String getAddress() {

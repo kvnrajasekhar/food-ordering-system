@@ -9,9 +9,13 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "RestaurantId")
     private Integer restaurantId;
+    
+    @OneToOne
+    @JoinColumn(name = "UserId", unique = true) 
+    private User user;
 
     @Column(name = "RestaurantName")
-    private String resName;
+    private String restaurantName;
 
     @Column(name = "Address")
     private String address;
@@ -25,9 +29,10 @@ public class Restaurant {
     public Restaurant() {
     }
 
-    public Restaurant(Integer restaurantId, String resName, String address, String cuisine, String ownerName) {
+    public Restaurant(User user,Integer restaurantId, String restaurantName, String address, String cuisine, String ownerName) {
+    	this.user = user;
         this.restaurantId = restaurantId;
-        this.resName = resName;
+        this.restaurantName = restaurantName;
         this.address = address;
         this.cuisine = cuisine;
         this.ownerName = ownerName;
@@ -40,13 +45,21 @@ public class Restaurant {
     public void setRestaurantId(Integer restaurantId) {
         this.restaurantId = restaurantId;
     }
-
-    public String getResName() {
-        return resName;
+    
+    public User getUser() {
+        return user;
     }
 
-    public void setResName(String resName) {
-        this.resName = resName;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
     }
 
     public String getAddress() {
@@ -75,6 +88,6 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "Restaurant [restaurantId=" + restaurantId + ", resName=" + resName + ", address=" + address + ", cuisine=" + cuisine + ", ownerName=" + ownerName + "]";
+        return "Restaurant [restaurantId=" + restaurantId + ", restaurantName=" + restaurantName + ", address=" + address + ", cuisine=" + cuisine + ", ownerName=" + ownerName + "]";
     }
 }

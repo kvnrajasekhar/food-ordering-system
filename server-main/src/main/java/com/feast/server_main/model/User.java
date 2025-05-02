@@ -28,6 +28,9 @@ public class User {
     @Column(name = "role", columnDefinition = "VARCHAR(255)")
     private String role;
 
+    @OneToOne(mappedBy = "user") 
+    private Restaurant restaurant;
+
     public User() {
     }
 
@@ -95,6 +98,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     @Override

@@ -10,6 +10,9 @@ import com.feast.server_main.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-	 List<User> findByUserName(String userName);
+	List<User> findByUserName(String userName);
+	 boolean existsByEmail(String email);
+	User getByEmail(String email);
+	User findByUserId(Integer userId);
 }
 

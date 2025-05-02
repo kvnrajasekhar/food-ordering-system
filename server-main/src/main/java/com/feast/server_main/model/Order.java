@@ -22,8 +22,8 @@ public class Order {
     @Column(name = "TotalPrice")
     private Double totalPrice;
 
-    @Column(name = "Quantity", columnDefinition = "VARCHAR(255)")
-    private String quantity;
+    @Column(name = "Quantity")
+    private Integer quantity;
 
     @Column(name = "OrderDate")
     private LocalDateTime date;
@@ -31,7 +31,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Integer orderId, User user, FoodItem foodItem, Double totalPrice, String quantity, LocalDateTime date) {
+    public Order(Integer orderId, User user, FoodItem foodItem, Double totalPrice, Integer quantity, LocalDateTime date) {
         this.orderId = orderId;
         this.user = user;
         this.foodItem = foodItem;
@@ -72,11 +72,11 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public String getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
