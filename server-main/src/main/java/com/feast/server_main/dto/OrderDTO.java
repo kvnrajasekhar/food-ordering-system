@@ -12,9 +12,10 @@ public class OrderDTO {
     private User user;
     private FoodItem foodItem;
     private Double totalPrice;
-    private String quantity;
+    private Integer quantity;
     private LocalDateTime date;
-	public OrderDTO(Integer orderId, User user, FoodItem foodItem, Double totalPrice, String quantity,
+    
+	public OrderDTO(Integer orderId, User user, FoodItem foodItem, Double totalPrice, Integer quantity,
 			LocalDateTime date) {
 		super();
 		this.orderId = orderId;
@@ -48,10 +49,10 @@ public class OrderDTO {
 	public void setTotalPrice(Double totalPrice) {
 		this.totalPrice = totalPrice;
 	}
-	public String getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(String quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 	public LocalDateTime getDate() {

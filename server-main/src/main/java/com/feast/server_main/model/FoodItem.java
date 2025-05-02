@@ -12,6 +12,9 @@ public class FoodItem {
 
     @Column(name = "FoodName", columnDefinition = "VARCHAR(255)")
     private String foodName;
+    
+    @Column(name = "FoodType", columnDefinition = "VARCHAR(255)")
+    private String foodType;    
 
     @ManyToOne
     @JoinColumn(name = "RestaurantId")
@@ -32,9 +35,10 @@ public class FoodItem {
     public FoodItem() {
     }
 
-    public FoodItem(Integer foodId, String foodName, Restaurant restaurant, String description, Float price, String imageURL, Double rating) {
+    public FoodItem(Integer foodId, String foodName, String foodType, Restaurant restaurant, String description, Float price, String imageURL, Double rating) {
         this.foodId = foodId;
         this.foodName = foodName;
+        this.foodType= foodType;
         this.restaurant = restaurant;
         this.description = description;
         this.price = price;
@@ -56,6 +60,14 @@ public class FoodItem {
 
     public void setFoodName(String foodName) {
         this.foodName = foodName;
+    }
+    
+    public String getFoodType() {
+        return foodType;
+    }
+
+    public void setFoodType(String foodType) {
+        this.foodType = foodType;
     }
 
     public Restaurant getRestaurant() {
