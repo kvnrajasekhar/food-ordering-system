@@ -101,10 +101,14 @@
 #product-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
   padding: 20px;
   margin: 0 200px;
 }
+
+
+
 .product-list-item {
   width: calc(33.33% - 20px); /* 3 columns with spacing */
   margin-bottom: 20px;

@@ -6,10 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.feast.server_main.dto.UserDTO;
+import com.feast.server_main.model.User;
 import com.feast.server_main.service.AuthService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.webjars.NotFoundException;
@@ -17,34 +18,42 @@ import org.webjars.NotFoundException;
 @RestController
 @CrossOrigin("http://127.0.0.1:5500")
 public class AuthController {
-	
-	@Autowired
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    @Autowired
     private AuthService authService;
-	
+
+    @Autowired 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public AuthController(AuthService authService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.authService = authService;
-       this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO) {
-        System.out.println("Received login request for email: " + userDTO.getEmail());  //  Add this
+    public ResponseEntity<User> login(@RequestBody User user) {
+        logger.info("Received login request for email: {}", user.getEmail());
         try {
-            UserDTO user = authService.login(userDTO, bCryptPasswordEncoder);
-            System.out.println("Login successful for user: " + user.getEmail()); // Add this
-            return ResponseEntity.ok(user);
+            User loggedInUser = authService.login(user);
+            logger.info("Login successful for user: {}", user.getEmail());
+            return ResponseEntity.ok(loggedInUser);
         } catch (NotFoundException e) {
-            System.out.println("Login failed: User not found for email: " + userDTO.getEmail()); // Add this
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            logger.warn("Login failed: User not found for email: {}", user.getEmail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Or .build()
         }
     }
+
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO> signup(@RequestBody UserDTO userDTO) {
-        UserDTO user = authService.signup(userDTO, bCryptPasswordEncoder);
-        return ResponseEntity.ok(user);
-        
+    public ResponseEntity<User> signup(@RequestBody User user) {
+        try {
+            User signedUpUser = authService.signup(user);
+            logger.info("Signup successful for user: {}", signedUpUser.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(signedUpUser); // Use 201 Created
+        } catch (IllegalArgumentException e) {
+            logger.error("Signup failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or .build()
+        }
     }
 }

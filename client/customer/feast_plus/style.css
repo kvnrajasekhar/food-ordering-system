@@ -200,15 +200,15 @@ body {
 
 
 /* items */
-.restaurant-card {
+/* .restaurant-card {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     margin-bottom: 20px;
     transition: transform 0.3s ease-in-out;
-}
-
+} */
+/* 
 .restaurant-card:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -216,7 +216,7 @@ body {
 
 .restaurant-card img {
     width: 100%;
-    height: 200px; /* Adjust as needed */
+    height: 200px; 
     object-fit: cover;
     border-bottom: 1px solid #eee;
 }
@@ -241,12 +241,12 @@ body {
 }
 
 .restaurant-meta .rating {
-    color: #ffc107; /* Gold color for rating star */
+    color: #ffc107; 
     margin-right: 10px;
 }
 
 .restaurant-meta span:not(:last-child)::after {
-    content: " · "; /* Separator */
+    content: " · "; 
     margin: 0 8px;
 }
 
@@ -255,7 +255,7 @@ body {
     font-size: 1rem;
     line-height: 1.6;
     margin-bottom: 15px;
-}
+} */
 
 
 
@@ -288,6 +288,12 @@ body {
 
 
 /*Main Restaurant Cards */
+#menu-items{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
 
 .restaurant-card {
     background: var(
@@ -326,17 +332,17 @@ body {
   .rating {
     color: var(
       --tertiary
-    ); /* Assuming you have CSS variables defined or replace with a color */
+    ); 
   }
   .view-menu {
     display: block;
     text-align: center;
     background: var(
       --primary
-    ); /* Assuming you have CSS variables defined or replace with a color */
+    ); 
     color: var(
       --text-light
-    ); /* Assuming you have CSS variables defined or replace with a color */
+    );
     padding: 10px;
     border-radius: 5px;
     text-decoration: none;

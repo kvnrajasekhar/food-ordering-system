@@ -1,4 +1,9 @@
 $(document).ready(function () {
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../layouts/404error.html";
+  }
   fetch("../layouts/nav.html")
     .then((response) => response.text())
     .then((navbarHTML) => {
@@ -9,6 +14,7 @@ $(document).ready(function () {
         $logoutLink.on("click", function (e) {
           e.preventDefault();
           localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
           window.location.replace("../../login/login.html");
         });
       } else {
@@ -19,52 +25,30 @@ $(document).ready(function () {
       console.error("Failed to load navbar:", error);
     });
 
-  const profileSection = $("#profileSection");
-  const editProfileSection = $("#editProfileSection");
-  const editProfileBtn = $("#editProfileBtn");
-  const saveProfileBtn = $("#saveProfileBtn");
-  // const logoutBtnProfile = $("#logoutBtnProfile");
-  // const logoutBtnEdit = $("#logoutBtnEdit");
+  const $profileSection = $("#profileSection");
+  const $editProfileSection = $("#editProfileSection");
+  const $editProfileBtn = $("#editProfileBtn");
+  const $saveProfileBtn = $("#saveProfileBtn");
 
-
-  const userId = localStorage.getItem("userId"); 
+  const userId = localStorage.getItem("userId");
 
   if (!userId) {
     const errmsg = "Please login to access your profile.";
-    localStorage.setItem("errmsg",errmsg)
+    localStorage.setItem("errmsg", errmsg);
     window.location.href = `../layouts/404error.html`;
     return;
   }
 
   fetchUserProfile(userId);
 
-  // if (user) {
-  //   displayProfile(user);
-  //   populateEditForm(user);
-  // } else {
-  //   console.error("Empty data array:", user);
-  //   alert("No data received from server. Please check the API response.");
-  // }
-  editProfileBtn.addEventListener("click", function () {
-    profileSection.style.display = "none";
-    editProfileSection.style.display = "block";
+  $editProfileBtn.on("click", function () {
+    $profileSection.hide();
+    $editProfileSection.show();
   });
 
-  saveProfileBtn.addEventListener("click", function () {
+  $saveProfileBtn.on("click", function () {
     saveUserProfile(userId);
   });
-
-  // logoutBtnProfile.addEventListener("click", function () {
-  //   e.preventDefault();
-  //   localStorage.removeItem("userId");
-  //   window.location.replace("../login/login.html");
-  // });
-
-  // logoutBtnEdit.addEventListener("click", function () {
-  //   e.preventDefault();
-  //   localStorage.removeItem("userId");
-  //   window.location.replace("../login/login.html");
-  // });
 });
 
 function fetchUserProfile(userId) {
@@ -73,24 +57,28 @@ function fetchUserProfile(userId) {
   $.ajax({
     url: url,
     method: "GET",
-    success: function (data) {
-      console.log("Fetched profile:", data);
-      if (data && data.length > 0) {
-        displayProfile(data[0]);
-        populateEditForm(data[0]);
+    success: function (response) {
+      console.log("Fetched profile:", response);
+      if (response && Array.isArray(response.details) && response.details.length > 0) {
+        displayProfile(response.details[0]);
+        populateEditForm(response.details[0]);
       } else {
-        console.error("Empty data array:", data);
-        alert("No data received from server. Please check the API response.");
+        console.error("Empty or invalid data array:", response);
+        alert("No user profile data received from the server.");
+        const errmsg = "No user profile data received from the server.";
+        localStorage.setItem("errmsg", errmsg);
+        window.location.href = `../layouts/404error.html`;
       }
     },
     error: function (xhr, status, error) {
       console.error("Error fetching profile:", status, error);
-      const errmsg = "Status Code '"+xhr.status+ "' : Error fetching profile " ;
-      localStorage.setItem("errmsg",errmsg)
+      const errmsg = "Status Code '" + xhr.status + "' : Error fetching profile ";
+      localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
     },
   });
 }
+
 function displayProfile(data) {
   if (data && typeof data === "object") {
     $("#displayName").text(data.userName);
@@ -99,8 +87,8 @@ function displayProfile(data) {
     $("#displayAddress").text(data.address);
   } else {
     console.error("Invalid data format:", data);
-    const errmsg = "Invalid data received from server.  Please check the API response.";
-    localStorage.setItem("errmsg",errmsg)
+    const errmsg = "Invalid user profile data received from the server.";
+    localStorage.setItem("errmsg", errmsg);
     window.location.href = `../layouts/404error.html`;
   }
 }
@@ -113,9 +101,9 @@ function populateEditForm(data) {
     $("#editAddress").val(data.address);
   } else {
     console.error("Invalid data format:", data);
-    alert("Invalid data received from server.  Please check the API response.");
-    const errmsg = "Status Code '"+xhr.status+ "' : Invalid data received from server.  Please check the API response.";
-    localStorage.setItem("errmsg",errmsg)
+    alert("Invalid user profile data received from the server.");
+    const errmsg = "Invalid user profile data received from the server.";
+    localStorage.setItem("errmsg", errmsg);
     window.location.href = `../layouts/404error.html`;
   }
 }
@@ -138,14 +126,16 @@ function saveUserProfile(userId) {
     success: function (response) {
       console.log("Profile updated successfully:", response);
       alert("Profile updated successfully!");
-      editProfileSection.style.display = "none";
-      profileSection.style.display = "block";
+      const $profileSection = $("#profileSection");  
+      const $editProfileSection = $("#editProfileSection"); 
+      $editProfileSection.hide();
+      $profileSection.show();
     },
     error: function (xhr, status, error) {
       console.error("Error updating profile:", xhr.responseText, status, error);
       alert("Failed to update profile. Please check the console for details.");
-      const errmsg = "Status Code '"+xhr.status+ "' : Error updating profile: " ;
-      localStorage.setItem("errmsg",errmsg)
+      const errmsg = "Status Code '" + xhr.status + "' : Error updating profile: ";
+      localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
     },
   });

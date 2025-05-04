@@ -1,6 +1,10 @@
 $(document).ready(function () {
-
-    fetch("../layouts/nav.html")
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../layouts/404error.html";
+  }
+  fetch("../layouts/nav.html")
     .then((response) => response.text())
     .then((navbarHTML) => {
       $("#navbar-container").html(navbarHTML);
@@ -12,6 +16,7 @@ $(document).ready(function () {
           e.preventDefault();
           console.log("before logout", localStorage.getItem("userId"));
           localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
           console.log("after logout", localStorage.getItem("userId"));
           window.location.replace("../../login/login.html");
         });
@@ -22,9 +27,9 @@ $(document).ready(function () {
     .catch((error) => {
       console.error("Failed to load navbar:", error);
     });
-    
+
   const orderId = localStorage.getItem("orderId");
-  
+
   const orderDetailsCard = $("#order-details-card");
   const deliveryPartnerInfo = $("#delivery-partner-info");
   const mapFrame = $("#google-map");
@@ -32,7 +37,7 @@ $(document).ready(function () {
 
   if (!orderId) {
     const errmsg = "Missing Order Information! Please try again.";
-    localStorage.setItem("errmsg",errmsg)
+    localStorage.setItem("errmsg", errmsg);
     window.location.href = `../layouts/404error.html`;
     return;
   }
@@ -41,14 +46,14 @@ $(document).ready(function () {
     $.ajax({
       url: `http://localhost:8081/restaurant/order/${orderId}/status`,
       method: "GET",
-      success: function (data) {
-        console.log("Order status data:", data);
-        updatePage(data);
+      success: function (response) {
+        console.log("Order status data:", response);
+        updatePage(response.details);
       },
       error: function (xhr, status, error) {
         console.error("Error fetching order status:", status, error);
         const errmsg = "Error fetching order status: " + status;
-        localStorage.setItem("errmsg",errmsg)
+        localStorage.setItem("errmsg", errmsg);
         window.location.href = `../layouts/404error.html`;
       },
     });

@@ -1,4 +1,9 @@
 $(document).ready(function () {
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../layouts/404error.html";
+  }
   fetch("../layouts/nav.html")
     .then((response) => response.text())
     .then((navbarHTML) => {
@@ -10,6 +15,7 @@ $(document).ready(function () {
           e.preventDefault();
           console.log("before logout", localStorage.getItem("userId"));
           localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
           console.log("after logout", localStorage.getItem("userId"));
           window.location.replace("../../login/login.html");
         });
@@ -32,17 +38,17 @@ $(document).ready(function () {
     if (!userId) {
       console.error("userId is missing from the URL.");
       const errmsg = " Missing User Information! Please login again.";
-      localStorage.setItem("errmsg",errmsg)
+      localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
       return;
     }
     $.ajax({
       url: `http://localhost:8081/customer/cart?userId=${userId}`,
       method: "GET",
-      success: function (data) {
-        console.log("Cart data fetched :", data);
-        cartData = data;
-        displayCartItems(data);
+      success: function (response) {
+        console.log("Cart data fetched :", response);
+        cartData = response.details;
+        displayCartItems(response.details);
         const userDetails = getUserDetails(userId);
         document.getElementById("rzp-button1").onclick = function (e) {
           e.preventDefault();
@@ -74,7 +80,7 @@ $(document).ready(function () {
               localStorage.setItem("orderId", orderId);
 
               console.log("re directing Order ID:", orderId);
-              // const userId = orderDetails.order.user.userId; // no need
+              clearCart(); // Call clearCart here
               window.location.href = `../delivery/delivery.html`;
             },
             prefill: {
@@ -92,7 +98,8 @@ $(document).ready(function () {
       },
       error: function (xhr, status, error) {
         console.error("Error fetching cart:", status, error);
-        const errmsg = "Status Code '"+xhr.status+ "' : Error fetching cart: " + status;
+        const errmsg =
+          "Status Code '" + xhr.status + "' : Error fetching cart: " + status;
         localStorage.setItem("errmsg", errmsg);
         window.location.href = `../layouts/404error.html`;
       },
@@ -113,40 +120,40 @@ $(document).ready(function () {
         totAmount += itemPrice;
 
         orderItemsHTML += `
-          <div class="col">
-            <div class="card ">
-              <div class="ratio ">
-                <img src="${
-                  item.foodItem.imageURL
-                }" class="card-img-top object-fit-cover " alt="${
+        <div class="col">
+          <div class="card ">
+            <div class="ratio ">
+              <img src="${
+                item.foodItem.imageURL
+              }" class="card-img-top object-fit-cover " alt="${
           item.foodItem.foodName
         }">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title">${item.foodItem.foodName}</h5>
-                <p class="card-text">Quantity: ${item.quantity}</p>
-                <p class="card-text">₹${itemPrice.toFixed(2)}</p>
-              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">${item.foodItem.foodName}</h5>
+              <p class="card-text">Quantity: ${item.quantity}</p>
+              <p class="card-text">₹${itemPrice.toFixed(2)}</p>
             </div>
           </div>
+        </div>
         `;
       });
 
       totAmount += deliveryFee;
 
       orderItemsHTML += `
-          </div>
-          <div class="mt-3">
-            <div class="d-flex justify-content-between">
-              <span>Delivery</span>
-              <span class="delivery-fee">₹${deliveryFee.toFixed(2)}</span>
-            </div>
-            <div class="d-flex justify-content-between fw-bold">
-              <span>TOTAL</span>
-              <span id="finalTotalAmount">₹${totAmount.toFixed(2)}</span>
-            </div>
-          </div>
-        `;
+      </div>
+      <div class="mt-3">
+        <div class="d-flex justify-content-between">
+          <span>Delivery</span>
+          <span class="delivery-fee">₹${deliveryFee.toFixed(2)}</span>
+        </div>
+        <div class="d-flex justify-content-between fw-bold">
+          <span>TOTAL</span>
+          <span id="finalTotalAmount">₹${totAmount.toFixed(2)}</span>
+        </div>
+      </div>
+      `;
     }
     orderInfoContainer.html(orderItemsHTML);
     console.log("Calculated Total Amount:", totAmount);
@@ -159,18 +166,22 @@ $(document).ready(function () {
       url: url,
       method: "GET",
       async: false,
-      success: function (data) {
-        console.log("Fetched profile:", data);
-        if (data && data.length > 0) {
-          sessionStorage.setItem("userProfile", JSON.stringify(data[0]));
+      success: function (response) {
+        console.log("Fetched profile:", response);
+        if (response && response.details && response.details.length > 0) {
+          sessionStorage.setItem(
+            "userProfile",
+            JSON.stringify(response.details[0])
+          );
         } else {
-          console.error("Empty data array:", data);
+          console.error("Empty data array:", response);
           alert("No data received from server. Please check the API response.");
         }
       },
       error: function (xhr, status, error) {
         console.error("Error fetching profile:", status, error);
-        const errmsg = "Status Code '"+xhr.status+ "' : Error fetching profile: " + status;
+        const errmsg =
+          "Status Code '" + xhr.status + "' : Error fetching profile: " + status;
         localStorage.setItem("errmsg", errmsg);
         window.location.href = `../layouts/404error.html`;
       },
@@ -191,6 +202,7 @@ $(document).ready(function () {
       success: function (response) {
         console.log("Order status updated successfully:", response);
         alert("Order placed successfully!");
+        // clearCart(); 
       },
       error: function (xhr, status, error) {
         console.error(
@@ -199,9 +211,14 @@ $(document).ready(function () {
           error,
           xhr.responseText
         );
-        const errmsg = "Status Code '"+xhr.status+ "' : Error updating order status: " + status;
-        localStorage.setItem("errmsg",errmsg)
-        window.location.href = `../layouts/404error.html`;      },
+        const errmsg =
+          "Status Code '" +
+          xhr.status +
+          "' : Error updating order status: " +
+          status;
+        localStorage.setItem("errmsg", errmsg);
+        window.location.href = `../layouts/404error.html`;
+      },
     });
   }
 
@@ -227,6 +244,27 @@ $(document).ready(function () {
     };
     console.log("Constructed Order Details to send server:", orderDetails);
     return orderDetails;
+  }
+
+  function clearCart() {
+    const userId = localStorage.getItem("userId");
+    $.ajax({
+      url: `http://localhost:8081/customer/cart/clear?userId=${userId}`,
+      method: "DELETE",
+      success: function (response) {
+        console.log("Cart cleared successfully");
+      },
+      error: function (xhr, status, error) {
+        console.error("Error clearing cart:", error);
+        const errmsg =
+          "Status Code '" +
+          xhr.status +
+          "' : Failed to clear cart. Please try again.";
+        localStorage.setItem("errmsg", errmsg);
+        window.location.href = `../layouts/404error.html`;
+        alert("Failed to clear cart.");
+      },
+    });
   }
 
   fetchCartItems();
