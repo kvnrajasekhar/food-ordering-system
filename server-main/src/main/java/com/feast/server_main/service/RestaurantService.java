@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.feast.server_main.dto.FoodItemDTO;
-import com.feast.server_main.dto.RestaurantDTO;
 import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.FoodItem;
 import com.feast.server_main.model.Restaurant;
@@ -72,12 +71,12 @@ public class RestaurantService {
         userDTO.setAddress(user.getAddress());
 
         if (user.getRestaurant() != null) {
-            RestaurantDTO restaurantDTO = new RestaurantDTO();
-            restaurantDTO.setRestaurantId(user.getRestaurant().getRestaurantId());
-            restaurantDTO.setRestaurantName(user.getRestaurant().getRestaurantName());
-            restaurantDTO.setAddress(user.getRestaurant().getAddress());
-            restaurantDTO.setCuisine(user.getRestaurant().getCuisine()); // Corrected
-            restaurantDTO.setOwnerName(user.getRestaurant().getOwnerName());// Corrected
+            Restaurant restaurant = new Restaurant();
+            restaurant.setRestaurantId(user.getRestaurant().getRestaurantId());
+            restaurant.setRestaurantName(user.getRestaurant().getRestaurantName());
+            restaurant.setAddress(user.getRestaurant().getAddress());
+            restaurant.setCuisine(user.getRestaurant().getCuisine()); // Corrected
+            restaurant.setOwnerName(user.getRestaurant().getOwnerName());// Corrected
         }
         return userDTO;
     }
@@ -92,9 +91,9 @@ public class RestaurantService {
         return restaurant.map(Restaurant::getRestaurantId); // Extract restaurantId, or Optional.empty()
     }
     
-	public List<FoodItemDTO> getAllItems() {
+	public List<FoodItem> getAllItems() {
 		List<FoodItem> items = foodItemRepository.findAll();
-		return items.stream().map(this::mapFoodItemToDto).collect(Collectors.toList());
+		return items;
 	}
 
 	public List<FoodItemDTO> getFoodItemsByRestaurant(Integer restaurantId) {
@@ -103,31 +102,37 @@ public class RestaurantService {
 	}
 
 	@Transactional
-	public FoodItemDTO addFoodItem(FoodItemDTO foodItemDTO) {
-		Restaurant restaurant = restaurantRepository.findByRestaurantId(foodItemDTO.getRestaurant().getRestaurantId());
-		FoodItem foodItem = convertDtoToEntity(foodItemDTO, restaurant);
+	public FoodItem addFoodItem(FoodItem foodItem) {
 		FoodItem savedFoodItem = foodItemRepository.save(foodItem);
-		return convertEntityToDto(savedFoodItem);
+		return savedFoodItem;
 	}
 
 	@Transactional
-	public FoodItemDTO updateFoodItem(Integer foodItemId, FoodItemDTO fooditemDTO) {
-		FoodItem foodItem = foodItemRepository.findById(foodItemId)
-				.orElseThrow(() -> new IllegalArgumentException("Food Item not found with ID: " + foodItemId));
+    public FoodItem updateFoodItem(Integer foodItemId, FoodItem foodItem) {
+        FoodItem existingFoodItem = foodItemRepository.findById(foodItemId)
+                .orElseThrow(() -> new IllegalArgumentException("Food Item not found with ID: " + foodItemId));
 
-		Restaurant restaurant = restaurantRepository.findByRestaurantId(fooditemDTO.getRestaurant().getRestaurantId());
+        existingFoodItem.setFoodName(foodItem.getFoodName());
+        existingFoodItem.setFoodType(foodItem.getFoodType());
+        existingFoodItem.setDescription(foodItem.getDescription());
+        existingFoodItem.setPrice(foodItem.getPrice());
+        existingFoodItem.setImageURL(foodItem.getImageURL());
+        existingFoodItem.setRating(foodItem.getRating());
 
-		foodItem.setFoodName(fooditemDTO.getFoodName());
-		foodItem.setFoodType(fooditemDTO.getFoodType());
-		foodItem.setRestaurant(restaurant);
-		foodItem.setDescription(fooditemDTO.getDescription());
-		foodItem.setPrice(fooditemDTO.getPrice());
-		foodItem.setImageURL(fooditemDTO.getImageURL());
-		foodItem.setRating(fooditemDTO.getRating());
+        return foodItemRepository.save(existingFoodItem);
+    }
 
-		FoodItem updatedFoodItem = foodItemRepository.save(foodItem);
-		return convertEntityToDto(updatedFoodItem);
-	}
+     public FoodItemDTO convertToDto(FoodItem foodItem) {
+        return new FoodItemDTO(
+                foodItem.getFoodId(),
+                foodItem.getFoodName(),
+                foodItem.getFoodType(),
+                foodItem.getDescription(),
+                foodItem.getPrice(),
+                foodItem.getImageURL(),
+                foodItem.getRating()
+        );
+    }
 
 	@Transactional
 	public void deleteFoodItem(Integer foodItemId) {
@@ -176,12 +181,12 @@ public class RestaurantService {
 
 
 
-	private FoodItemDTO convertFoodEntityToDto(FoodItem entity) {
-		FoodItemDTO dto = new FoodItemDTO(entity.getFoodId(), entity.getFoodName(), entity.getFoodType(),
-				entity.getRestaurant(), entity.getDescription(), entity.getPrice(), entity.getImageURL(),
-				entity.getRating());
-		return dto;
-	}
+	/*
+	 * private FoodItemDTO convertFoodEntityToDto(FoodItem entity) { FoodItemDTO dto
+	 * = new FoodItemDTO(entity.getFoodId(), entity.getFoodName(),
+	 * entity.getFoodType(), entity.getDescription(), entity.getPrice(),
+	 * entity.getImageURL(), entity.getRating()); return dto; }
+	 */
 
 	FoodItem convertDtoToEntity(FoodItemDTO dto, Restaurant restaurant) {
 		FoodItem foodItem = new FoodItem();
@@ -195,16 +200,16 @@ public class RestaurantService {
 		return foodItem;
 	}
 
-	private FoodItemDTO convertEntityToDto(FoodItem entity) {
-		FoodItemDTO dto = new FoodItemDTO(entity.getFoodId(), entity.getFoodName(), entity.getFoodType(),
-				entity.getRestaurant(), entity.getDescription(), entity.getPrice(), entity.getImageURL(),
-				entity.getRating());
-		return dto;
-	}
+	/*
+	 * private FoodItemDTO convertEntityToDto(FoodItem entity) { FoodItemDTO dto =
+	 * new FoodItemDTO(entity.getFoodId(), entity.getFoodName(),
+	 * entity.getFoodType(), entity.getDescription(), entity.getPrice(),
+	 * entity.getImageURL(), entity.getRating()); return dto; }
+	 */
 
 	private FoodItemDTO mapFoodItemToDto(FoodItem foodItem) {
 		return new FoodItemDTO(foodItem.getFoodId(), foodItem.getFoodName(), foodItem.getFoodType(),
-				foodItem.getRestaurant(), foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(),
+				 foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(),
 				foodItem.getRating());
 	}
 

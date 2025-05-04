@@ -1,4 +1,9 @@
 $(document).ready(function () {
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../layouts/404error.html";
+  }
   fetch("../layouts/nav.html")
     .then((response) => response.text())
     .then((navbarHTML) => {
@@ -10,6 +15,7 @@ $(document).ready(function () {
         $logoutLink.on("click", function (e) {
           e.preventDefault();
           localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
           window.location.replace("../../login/login.html");
         });
       } else {
@@ -33,37 +39,18 @@ $(document).ready(function () {
   const userId = localStorage.getItem("userId");
   console.log("userId:", userId);
 
-  // if (!userId) {
-  //   console.error("userId is missing from the URL.");
-  //   const errmsg = "Missing User Information! Please to login again.";
-  //   localStorage.setItem("errmsg", errmsg);
-  //   window.location.href = `../layouts/404error.html`;
-  //   // setTimeout(function () {
-  //   //   window.location.href = "../login/login.html";
-  //   // }, 5000);
-  //   return; // Stop further execution
-  // }
-  // if (userId && !restaurantId) {
-  //   const errmsg = "Missing restaurant information. Please select restaurant.";
-  //   localStorage.setItem("errmsg", errmsg);
-  //   window.location.href = `../layouts/404error.html`;
-  //   // setTimeout(function () {
-  //   //   window.location.href = "../restaurant-menu/resto.html";
-  //   // }, 5000);
-  //   return;
-  // }
-
   function fetchUserCart() {
     $.ajax({
       url: "http://localhost:8081/customer/cart",
       method: "GET",
       dataType: "json",
       data: { userId: userId },
-      success: function (cartResponse) {
+      success: function (response) { // Changed parameter name to response
         userCartItems.clear();
         cartRestaurantId = null; // Reset to null before processing
 
-        if (cartResponse && Array.isArray(cartResponse)) {
+        if (response && Array.isArray(response.details)) { // Access response.details
+          const cartResponse = response.details;
           if (cartResponse.length > 0) {
             cartRestaurantId = cartResponse[0].foodItem.restaurantId; // Set from the first item
             cartResponse.forEach((item) => {
@@ -89,7 +76,6 @@ $(document).ready(function () {
         " Missing restaurant information. Please select restaurant.";
       localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
-
       return;
     }
     const apiUrl = `http://localhost:8081/customer/restaurants/${restaurantId}/food-items`;
@@ -98,8 +84,17 @@ $(document).ready(function () {
       url: apiUrl,
       method: "GET",
       dataType: "json",
-      success: function (foodItems) {
-        renderProducts(foodItems);
+      success: function (response) { 
+        console.log("Successfully fetched product data:", response.details);
+
+        if (response && Array.isArray(response.details)) { 
+          renderProducts(response.details);
+        } else {
+          console.error("Error: Invalid product data format from server.", response);
+          productListContainer.html(
+            '<p class="text-center alert alert-danger">Error loading products.</p>'
+          );
+        }
       },
       error: function (xhr, status, error) {
         console.error("Error fetching product data:", error);
@@ -108,10 +103,9 @@ $(document).ready(function () {
           xhr.status +
           "' : Error fetching product data. Please try again.";
         localStorage.setItem("errmsg", errmsg);
-
         // window.location.replace(`../layouts/404error.html`);
         // setTimeout(function () {
-        //   messageContainer.fadeOut();
+        //   messageContainer.fadeOut();
         // }, 5000);
       },
     });
@@ -133,29 +127,29 @@ $(document).ready(function () {
         : "Add to Cart";
       const isDisabledAttr = isDisabled ? "disabled-btn" : "";
       card.html(`
-            <img src="${
-              product.imageURL || "../products/img/default-food.jpg"
-            }" alt="${product.foodName}">
-            <div class="product-info">
-              <h4>${product.foodName.replace(/_/g, " ")}</h4>
-              <div class="product-meta">
-                ${
-                  product.rating
-                    ? `<span class="rating">⭐ ${product.rating}</span>`
-                    : ""
-                }
-                ${
-                  product.description
-                    ? `<span>${product.description.substring(0, 50)}...</span>`
-                    : ""
-                }
-              </div>
-              <p class="price">₹${
-                product.price ? product.price.toFixed(2) : "N/A"
-              }</p>
-              <button class="add-to-cart-btn product-details-btn ${isDisabledAttr}" data-food-id="${product.foodId}" data-restaurant-id="${product.restaurantId}" ${isDisabled ? "disabled" : ""}>${buttonText}</button>
+          <img src="${
+            product.imageURL || "../products/img/default-food.jpg"
+          }" alt="${product.foodName}">
+          <div class="product-info">
+            <h4>${product.foodName.replace(/_/g, " ")}</h4>
+            <div class="product-meta">
+              ${
+                product.rating
+                  ? `<span class="rating">⭐ ${product.rating}</span>`
+                  : ""
+              }
+              ${
+                product.description
+                  ? `<span>${product.description.substring(0, 50)}...</span>`
+                  : ""
+              }
             </div>
-          `);
+            <p class="price">₹${
+              product.price ? product.price.toFixed(2) : "N/A"
+            }</p>
+            <button class="add-to-cart-btn product-details-btn ${isDisabledAttr}" data-food-id="${product.foodId}" data-restaurant-id="${product.restaurantId}" ${isDisabled ? "disabled" : ""}>${buttonText}</button>
+          </div>
+        `);
       productListContainer.append(card);
     });
 
@@ -220,7 +214,7 @@ $(document).ready(function () {
   }
 
   function addItemToOrder(foodId, buttonElement, totalPrice, userId) {
-    const restaurantId = getRestaurantIdFromUrl();
+    const restaurantId = localStorage.getItem("restaurantId");
 
     $.ajax({
       url: "http://localhost:8081/customer/order",
@@ -232,7 +226,7 @@ $(document).ready(function () {
         quantity: 1,
         totalPrice: totalPrice,
       }),
-      success: function (response) {
+      success: function (response) { // Changed parameter name to response
         console.log("Item added to order:", response);
         alert("Item added to your order!");
         $(buttonElement)
@@ -261,7 +255,7 @@ $(document).ready(function () {
     $.ajax({
       url: `http://localhost:8081/customer/cart/clear?userId=${userId}`,
       method: "DELETE",
-      success: function (response) {
+      success: function (response) { 
         console.log("Cart cleared successfully:", response);
         userCartItems.clear();
         cartRestaurantId = null;
@@ -281,3 +275,5 @@ $(document).ready(function () {
 
   fetchUserCart();
 });
+
+

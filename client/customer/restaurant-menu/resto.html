@@ -80,6 +80,11 @@
 
     <script>
       $(document).ready(function () {
+        const userRole = localStorage.getItem("userRole");
+        if (userRole !== "customer") {
+          localStorage.setItem("errmsg", "User is not a customer.");
+          window.location.href = "../layouts/404error.html";
+        }
         const $restaurantListContainer = $("#restaurant-list");
         const itemModal = new bootstrap.Modal(
           document.getElementById("itemModal")
@@ -93,6 +98,16 @@
 
         const userId = localStorage.getItem("userId");
 
+        const staticImageUrls = [
+            "../restaurant-menu/res-images/rt1.jpg",
+            "../restaurant-menu/res-images/rt2.jpg",
+            "../restaurant-menu/res-images/rt3.png",
+            "../restaurant-menu/res-images/rt4.png",
+            "../restaurant-menu/res-images/rt5.jpg",
+            "../restaurant-menu/res-images/rt6.jpg",
+            "../restaurant-menu/res-images/rt7.png",
+          ];
+
         // Fetch and inject navbar, then attach event listener
         fetch("../layouts/nav.html")
           .then((response) => response.text())
@@ -104,6 +119,7 @@
               $logoutLink.on("click", function (e) {
                 e.preventDefault();
                 localStorage.removeItem("userId");
+                localStorage.removeItem("userRole");
                 window.location.replace("../../login/login.html");
               });
             } else {
@@ -115,11 +131,15 @@
           });
 
         function renderRestaurants(restaurants) {
+
           $restaurantListContainer.empty();
           restaurants.forEach((restaurant) => {
-            const restaurantImg = "../logos/dominos.jpg";
+            const randomImage =
+              staticImageUrls[
+                Math.floor(Math.random() * staticImageUrls.length)
+              ];
             const $card = $("<div>").addClass("restaurant-card").html(`
-                        <img src="${restaurantImg}" alt="${restaurant.restaurantName}">
+                        <img src="${randomImage}" alt="${restaurant.restaurantName}">
                         <div class="restaurant-info">
                             <h4>${restaurant.restaurantName}</h4>
                             <div class="restaurant-meta">
@@ -147,10 +167,12 @@
         }
 
         function openRestaurantDetailsModal(restaurant) {
-          const restaurantImg = "../logos/dominos.jpg";
-          $modalTitle.text(restaurant.restaurantName);
+          const randomImage =
+              staticImageUrls[
+                Math.floor(Math.random() * staticImageUrls.length)
+              ];          $modalTitle.text(restaurant.restaurantName);
           $modalImage
-            .attr("src", restaurantImg)
+            .attr("src", randomImage)
             .attr("alt", restaurant.restaurantName);
           $modalDescription.text(
             `Cuisine: ${restaurant.cuisine} | Address: ${restaurant.address}`
@@ -174,7 +196,8 @@
               }
               return response.json();
             })
-            .then((restaurants) => {
+            .then((response) => {
+              const restaurants = response.details;
               renderRestaurants(restaurants);
             })
             .catch((error) => {

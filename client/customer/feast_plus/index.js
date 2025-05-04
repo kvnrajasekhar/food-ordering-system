@@ -1,19 +1,24 @@
 $(document).ready(function () {
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../../layouts/404error.html";
+  }
   const $itemsList = $("#items-list");
   const $filterButtons = $(".filter-button");
 
-  // Fetch and inject navbar, then attach event listener
   fetch("../layouts/nav.html")
     .then((response) => response.text())
     .then((navbarHTML) => {
       $("#navbar-container").html(navbarHTML);
 
-      const $logoutLink = $("#logout-link"); 
+      const $logoutLink = $("#logout-link");
 
       if ($logoutLink.length) {
         $logoutLink.on("click", function (e) {
           e.preventDefault();
           localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
           window.location.replace("../../login/login.html");
         });
       } else {
@@ -32,19 +37,21 @@ $(document).ready(function () {
       url: "http://localhost:8081/customer/food-items",
       method: "GET",
       dataType: "json",
-      success: function (foodItems) {
-        console.log(
-          "Successfully fetched foodItems (length: " + foodItems.length + "):",
-          foodItems
-        );
+      success: function (response) {
+        console.log("Successfully fetched foodItems:", response);
 
-        if (!Array.isArray(foodItems)) {
-          console.error("ERROR: foodItems is not an array!", foodItems);
+        if (!response || !Array.isArray(response.details)) {
+          console.error(
+            "ERROR: Invalid data from server, expected response.details to be an array!",
+            response
+          );
           $itemsList.html(
-            "<p class='text-center alert alert-danger'>Error: Invalid data from server (not an array).</p>"
+            "<p class='text-center alert alert-danger'>Error: Invalid data from server (expected an array in details).</p>"
           );
           return;
         }
+
+        const foodItems = response.details;
 
         if (foodItems.length === 0) {
           console.warn("WARNING: foodItems array is empty.");
@@ -92,35 +99,35 @@ $(document).ready(function () {
         }
 
         $.each(filteredItems, function (index, item) {
-          let imageSource = item.imageURL || "../../products/img/default-food.jpg";
+          let imageSource =
+            item.imageURL || "../../products/img/default-food.jpg";
           const $card = $("<div>").addClass("restaurant-card").html(`
-                        <img src="${
-                          imageSource
-                        }" alt="${item.foodName}">
-                        <div class="restaurant-info">
-                            <h4>${item.foodName.replace(/_/g, " ")}</h4>
-                            <div class="restaurant-meta">
-                                ${
-                                  item.rating
-                                    ? `<span class="rating">⭐ ${item.rating}</span>`
-                                    : ""
-                                }
-                                <span>${item.foodType}</span>
-                            </div>
-                            <p>${
-                              item.description
-                                ? item.description.substring(0, 50) + "..."
-                                : ""
-                            }</p>
-                            <a href="../restaurant-menu/resto.html" class="view-menu">Order</a>
-                        </div>
-                    `);
+                <img src="${imageSource}" alt="${item.foodName}">
+                <div class="restaurant-info">
+                  <h4>${item.foodName.replace(/_/g, " ")}</h4>
+                  <div class="restaurant-meta">
+                    ${
+                      item.rating
+                        ? `<span class="rating">⭐ ${item.rating}</span>`
+                        : ""
+                    }
+                    <span>${item.foodType}</span>
+                  </div>
+                  <p>${
+                    item.description
+                      ? item.description.substring(0, 50) + "..."
+                      : ""
+                  }</p>
+                  <a href="../restaurant-menu/resto.html" class="view-menu">Order</a>
+                </div>
+              `);
           $itemsList.append($card);
         });
       },
       error: function (xhr, status, error) {
         console.error("Error fetching food items:", xhr.status);
-        const errmsg = "Status Code '"+xhr.status+ "' : Error fetching food items!"; // Include error
+        const errmsg =
+          "Status Code '" + xhr.status + "' : Error fetching food items!";
         localStorage.setItem("errmsg", errmsg);
         window.location.href = "../layouts/404error.html";
       },
@@ -134,20 +141,41 @@ $(document).ready(function () {
     displayItems(cuisine);
   });
 
-  // Initial display, show all items
   displayItems("All");
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const menuContainer = $("#menu-items"); 
-  const staticImageUrl = "../restaurant-menu/food-images/mcd.jpg";
+  const menuContainer = $("#menu-items");
+  const staticImageUrls = [
+    "../restaurant-menu/res-images/rt1.jpg",
+    "../restaurant-menu/res-images/rt2.jpg",
+    "../restaurant-menu/res-images/rt3.png",
+    "../restaurant-menu/res-images/rt4.png",
+    "../restaurant-menu/res-images/rt5.jpg",
+    "../restaurant-menu/res-images/rt6.jpg",
+    "../restaurant-menu/res-images/rt7.png",
+  ];
 
   function fetchAndRenderRestaurants() {
     $.ajax({
       url: "http://localhost:8081/customer/restaurants",
-      method: "GET", 
+      method: "GET",
       dataType: "json",
-      success: function (restaurants) {
+      success: function (response) {
+        console.log("Successfully fetched restaurants:", response);
+
+        if (!response || !Array.isArray(response.details)) {
+          console.error(
+            "ERROR: Invalid data from server.  Expected response.details to be an array.",
+            response
+          );
+          menuContainer.html(
+            "<p class='error-message alert alert-warning'>Error loading restaurants: Invalid data format from server.</p>"
+          );
+          return;
+        }
+        const restaurants = response.details;
+
         renderRestaurants(restaurants);
       },
       error: function (xhr, status, error) {
@@ -160,32 +188,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderRestaurants(restaurants) {
-    menuContainer.empty(); // Use jQuery's empty()
+    menuContainer.empty();
     restaurants.forEach((restaurant) => {
-      const col = $("<div>").addClass("col-md-4 mb-4").html(`
-                    <div class="card menu-card">
-                        <img src="${staticImageUrl}" class="card-img-top" alt="${restaurant.restaurantName}">
-                        <div class="card-body">
-                            <h5 class="card-title restaurant-name">${restaurant.restaurantName}</h5>
-                            <p class="card-text restaurant-address">Address: ${restaurant.address}</p>
-                            <p class="card-text restaurant-cuisine">Cuisine: ${restaurant.cuisine}</p>
-                            <button class="btn view-menu-btn view-menu" data-restaurant-id="${restaurant.restaurantId}">View Menu</button>
-                        </div>
-                    </div>
-                `);
+      const randomImage =
+        staticImageUrls[Math.floor(Math.random() * staticImageUrls.length)];
+      const col = $("<div>").addClass(" restaurant-card").html(`
+          <div class="card menu-card">
+            <div class="img-wrapper">
+              <img src="${randomImage}" class="card-img-top img-fluid" alt="${restaurant.restaurantName}">
+            </div>            
+            <div class="card-body ">
+              <h5 class="card-title restaurant-name">${restaurant.restaurantName}</h5>
+              <p class="card-text restaurant-address">Address: ${restaurant.address}</p>
+              <p class="card-text restaurant-cuisine">Cuisine: ${restaurant.cuisine}</p>
+              <button class="btn view-menu-btn view-menu" data-restaurant-id="${restaurant.restaurantId}">View Menu</button>
+            </div>
+          </div>
+        `);
 
-      menuContainer.append(col); // Use jQuery's append()
+      menuContainer.append(col);
     });
 
-    const userId = localStorage.getItem("userId"); // Get userId from local storage
+    const userId = localStorage.getItem("userId");
     console.log("User Id from local storage:", userId);
 
     // Add event listeners to the "View Menu" buttons after they are rendered
     $(".view-menu-btn").each(function () {
       $(this).on("click", function () {
         const restaurantId = $(this).data("restaurant-id");
-        localStorage.setItem("restaurantId", restaurantId); // Store the restaurantId in local storage
-        window.location.href = `/client/products/product.html`;
+        localStorage.setItem("restaurantId", restaurantId);
+        window.location.href = `/client/customer/products/product.html`;
       });
     });
   }

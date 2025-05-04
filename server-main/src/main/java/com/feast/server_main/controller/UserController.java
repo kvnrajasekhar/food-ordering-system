@@ -2,7 +2,10 @@ package com.feast.server_main.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.feast.server_main.dto.FoodItemDTO;
 import com.feast.server_main.dto.OrderDTO;
 import com.feast.server_main.dto.RestaurantDTO;
 import com.feast.server_main.dto.UserDTO;
+import com.feast.server_main.model.Order;
 import com.feast.server_main.model.RestaurantOrderStatus;
+import com.feast.server_main.response.StandardResponse;
 import com.feast.server_main.service.UserService;
 
 @RestController
@@ -29,76 +35,166 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/food-items")
-    public List<FoodItemDTO> getAllFoodItems() {
-        return (userService.getAllFoodItems());
+    public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getAllFoodItems() {
+        logger.info("Getting all food items for customer.");
+        try {
+            List<FoodItemDTO> foodItems = userService.getAllFoodItems();
+            logger.info("Retrieved {} food items.", foodItems.size());
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", foodItems), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error retrieving food items: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve food items", e);
+        }
     }
 
     @GetMapping("/restaurants")
-    public List<RestaurantDTO> getAllRestaurants() {
-        return userService.getAllRestaurants();
+    public ResponseEntity<StandardResponse<List<RestaurantDTO>>> getAllRestaurants() {
+        logger.info("Getting all restaurants for customer.");
+        try {
+            List<RestaurantDTO> restaurants = userService.getAllRestaurants();
+            logger.info("Retrieved {} restaurants.", restaurants.size());
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", restaurants), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error retrieving restaurants: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve restaurants", e);
+        }
     }
 
     @GetMapping("/restaurants/{restaurantId}/food-items")
-    public List<FoodItemDTO> getFoodItemsByRestaurant(@PathVariable Integer restaurantId) {
-        return (userService.getFoodItemsByRestaurant(restaurantId));
+    public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getFoodItemsByRestaurant(
+            @PathVariable Integer restaurantId) {
+        logger.info("Getting food items for restaurantId: {}", restaurantId);
+        try {
+            List<FoodItemDTO> foodItems = userService.getFoodItemsByRestaurant(restaurantId);
+            logger.info("Retrieved {} food items for restaurantId: {}", foodItems.size(), restaurantId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", foodItems), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid argument for restaurantId: {}", restaurantId, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving food items for restaurantId {}: {}", restaurantId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve food items by restaurant", e);
+        }
     }
 
     @PostMapping("/order")
-    public ResponseEntity<OrderDTO> placeOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<StandardResponse<OrderDTO>> placeOrder(@RequestBody OrderDTO orderDTO) {
+        logger.info("Placing order: {}", orderDTO);
         try {
             OrderDTO placedOrder = userService.placeOrder(orderDTO);
-            return ResponseEntity.ok(placedOrder);
+            logger.info("Order placed successfully. Order ID: {}", placedOrder.getOrderId());
+            return new ResponseEntity<>(
+                    new StandardResponse<>(HttpStatus.CREATED.value(), "Order placed successfully", placedOrder),
+                    HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+            logger.error("Invalid order details: {}", orderDTO, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error placing order: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to place order", e);
         }
     }
 
     @GetMapping("/cart")
-    public List<OrderDTO> getCartByOrderId(@RequestParam("userId") Integer userId) {
-        return userService.getCartByUserId(userId);
-    }
-
-    @PutMapping("/cart/{orderId}")
-    public ResponseEntity<String> updateOrder(
-            @PathVariable Integer orderId,
-            @RequestParam("userId") Integer userId,
-            @RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<StandardResponse<List<OrderDTO>>> getCartByOrderId(@RequestParam("userId") Integer userId) {
+        logger.info("Getting cart for userId: {}", userId);
         try {
-            int newQuantity = orderDTO.getQuantity();
-            userService.updateOrderQuantity(orderId, newQuantity, userId);
-            return ResponseEntity.ok("Quantity updated");
+            List<OrderDTO> cart = userService.getCartByUserId(userId);
+            logger.info("Retrieved cart for userId {}. Cart size: {}", userId, cart.size());
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", cart), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error("Invalid userId: {}", userId, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving cart for userId {}: {}", userId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve cart", e);
         }
     }
 
-    @DeleteMapping("/cart/clear") 
-    public ResponseEntity<String> clearCart(@RequestParam("userId") Integer userId) {
+    @PutMapping("/cart/{orderId}")
+    public ResponseEntity<StandardResponse<Order>> updateOrder(@PathVariable Integer orderId,
+            @RequestParam("userId") Integer userId, @RequestBody OrderDTO orderDTO) {
+        logger.info("Updating orderId: {} for userId: {} with orderDTO: {}", orderId, userId, orderDTO);
+        try {
+            Order orderUpdated = userService.updateOrderQuantity(orderId, orderDTO.getQuantity(), userId);
+            logger.info("Order updated successfully. Order ID: {}", orderId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Successfully updated", orderUpdated),
+                    HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid order update request. orderId: {}, userId: {}, orderDTO: {}", orderId, userId, orderDTO, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating order. orderId: {}, userId: {}, orderDTO: {}", orderId, userId, orderDTO, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update order", e);
+        }
+    }
+
+    @DeleteMapping("/cart/clear")
+    public ResponseEntity<StandardResponse<Void>> clearCart(@RequestParam("userId") Integer userId) {
+        logger.info("Clearing cart for userId: {}", userId);
         try {
             userService.removeOrder(userId);
-            return ResponseEntity.ok("Cart cleared successfully.");
+            logger.info("Cart cleared successfully for userId: {}", userId);
+            return new ResponseEntity<>(
+                    new StandardResponse<>(HttpStatus.NO_CONTENT.value(), "Order deleted successfully", null),
+                    HttpStatus.NO_CONTENT);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            logger.error("Invalid userId: {}", userId, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error clearing cart for userId: {}", userId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to clear cart", e);
         }
     }
 
     @GetMapping("/profile/{userId}")
-    public List<UserDTO> getUserProfileByUserId(@PathVariable Integer userId) {
-        return userService.getUserProfileByUserId(userId);
+    public ResponseEntity<StandardResponse<List<UserDTO>>> getUserProfileByUserId(@PathVariable Integer userId) {
+        logger.info("Getting user profile for userId: {}", userId);
+        try {
+            List<UserDTO> userProfile = userService.getUserProfileByUserId(userId);
+            logger.info("User profile retrieved successfully for userId: {}", userId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "User profile retrieved successfully", userProfile), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid userId: {}", userId, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error retrieving user profile for userId {}: {}", userId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to get user profile", e);
+        }
     }
 
     @PutMapping("/profile/edit/{userId}")
-    public ResponseEntity<UserDTO> updateUserProfile(@PathVariable Integer userId, @RequestBody UserDTO userDTO) {
-        return userService.updateUserProfile(userId, userDTO);
+    public ResponseEntity<StandardResponse<UserDTO>> updateUserProfile(@PathVariable Integer userId, @RequestBody UserDTO userDTO) {
+        logger.info("Updating user profile for userId: {} with userDTO: {}", userId, userDTO);
+        try {
+            UserDTO updatedUser = userService.updateUserProfile(userId, userDTO);
+            logger.info("User profile updated successfully for userId: {}", userId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "User profile updated", updatedUser), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid user profile update request. userId: {}, userDTO: {}", userId, userDTO, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating user profile for userId {}: {}", userId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update user profile", e);
+        }
     }
-    
-    @PostMapping("/order/status")
-    public ResponseEntity<RestaurantOrderStatus> updateOrderStatus(@RequestBody RestaurantOrderStatus orderStatusDTO) {
-            RestaurantOrderStatus savedOrderStatus = userService.updateOrderStatus(orderStatusDTO);
-            return ResponseEntity.ok(savedOrderStatus);
 
+    @PostMapping("/order/status")
+    public ResponseEntity<StandardResponse<RestaurantOrderStatus>> updateOrderStatus(@RequestBody RestaurantOrderStatus orderStatusDTO) {
+        logger.info("Updating order status: {}", orderStatusDTO);
+        try {
+            RestaurantOrderStatus savedOrderStatus = userService.updateOrderStatus(orderStatusDTO);
+            logger.info("Order status updated successfully. Order ID: {}", savedOrderStatus.getOrder().getOrderId());
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Order status updated", savedOrderStatus), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid order status update request: {}", orderStatusDTO, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error updating order status: {}", orderStatusDTO, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update order status", e);
+        }
     }
-    
 }

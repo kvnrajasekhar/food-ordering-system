@@ -3,10 +3,10 @@ package com.feast.server_main.service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -102,7 +102,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateOrderQuantity(Integer orderId, int newQuantity, Integer userId) {
+    public Order updateOrderQuantity(Integer orderId, int newQuantity, Integer userId) {
         Order order = orderRepository.findByOrderId(orderId);
         if (order == null) {
             throw new IllegalArgumentException("Order not found");
@@ -112,19 +112,22 @@ public class UserService {
         }
         order.setQuantity(newQuantity);
         order.setTotalPrice(order.getFoodItem().getPrice() * (double) newQuantity);
-        orderRepository.save(order);
+        return orderRepository.save(order);
+        
     }
 
     @Transactional
     public void removeOrder(Integer userId) {
-        User user = userRepository.findByUserId(userId);
+    	Optional<User> userOptional = userRepository.findById(userId); 
+        if (!userOptional.isPresent()) {
+            throw new IllegalArgumentException("User not found.");
+        }
+        User user = userOptional.get();
         List<Order> orders = orderRepository.findByUser(user);
         if (orders.isEmpty()) {
             throw new IllegalArgumentException("Cart is already empty for this user.");
         }
-        for (Order order : orders) {
-            orderRepository.delete(order);
-        }
+         orderRepository.deleteAll(orders); 
     }
 
     @Transactional(readOnly = true)
@@ -138,7 +141,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<UserDTO> updateUserProfile(Integer userId, UserDTO userDTO) {
+    public UserDTO updateUserProfile(Integer userId, UserDTO userDTO) {
         User user = userRepository.findByUserId(userId);
         User existingUser = user;
 
@@ -157,7 +160,7 @@ public class UserService {
 
         User updatedUser = userRepository.save(existingUser);
         UserDTO updatedUserDTO = convertToDto(updatedUser);
-        return ResponseEntity.ok(updatedUserDTO);
+        return updatedUserDTO;
     }
     
     @Transactional
@@ -181,13 +184,12 @@ public class UserService {
     }
 
     private RestaurantDTO mapRestaurantToDTO(Restaurant restaurant) {
-        return new RestaurantDTO(restaurant.getRestaurantId(), null,restaurant.getRestaurantName(), restaurant.getAddress(),
-                restaurant.getCuisine(), restaurant.getOwnerName());
+        return new RestaurantDTO(restaurant.getRestaurantId(), null,restaurant.getRestaurantName(),restaurant.getAddress(),restaurant.getCuisine(),restaurant.getOwnerName());
     }
 
     private FoodItemDTO mapFoodItemToDTO(FoodItem foodItem) {
         return new FoodItemDTO(foodItem.getFoodId(), foodItem.getFoodName(), foodItem.getFoodType(),
-                foodItem.getRestaurant(), foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(),
+                foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(),
                 foodItem.getRating());
     }
 
@@ -197,12 +199,12 @@ public class UserService {
     }
 
     private UserDTO mapUserToDTO(User user) {
-        return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(),
-                user.getAddress(), user.getRole(),null);
+        return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPhoneNumber(),
+                user.getAddress(), user.getRole());
     }
 
     private UserDTO convertToDto(User user) {
-        return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPassword(), user.getPhoneNumber(),
-                user.getAddress(), user.getRole(),null);
+        return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPhoneNumber(),
+                user.getAddress(), user.getRole());
     }
 }

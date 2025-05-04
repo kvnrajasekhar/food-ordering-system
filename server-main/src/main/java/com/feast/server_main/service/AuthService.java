@@ -3,7 +3,11 @@ package com.feast.server_main.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.webjars.NotFoundException;
+import org.webjars.NotFoundException; // Consider using Spring's DataAccessException
+import org.springframework.dao.EmptyResultDataAccessException; // Import this
+import org.springframework.transaction.annotation.Transactional; // Import this
+import org.slf4j.Logger; // Import SLF4J
+import org.slf4j.LoggerFactory;
 
 import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.User;
@@ -11,32 +15,22 @@ import com.feast.server_main.repository.UserRepository;
 
 @Service
 public class AuthService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class); // Initialize logger
+
     @Autowired
     private UserRepository userRepository;
 
-    public AuthService(UserRepository userRepository) {
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public AuthService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public UserDTO login(UserDTO userDTO, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        String email = userDTO.getEmail();
-        System.out.println("Received email for login: " + email); // Add this
-        User user = userRepository.getByEmail(email);
-
-        if (user == null) {
-            throw new NotFoundException("User not found");
-        }
-        System.out.println("Encoded password from DB: " + user.getPassword());  //add this
-        System.out.println("Raw password from request: " + userDTO.getPassword()); //add this
-        if (bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
-            return convertToDto(user);
-        } else {
-            throw new NotFoundException("Invalid password");
-        }
-    }
-
-    public UserDTO signup(UserDTO userDTO, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        String email = userDTO.getEmail();
+    @Transactional
+    public User signup(User user) {
+        String email = user.getEmail();
         User existingUser = userRepository.getByEmail(email);
 
         if (existingUser != null) {
@@ -44,15 +38,37 @@ public class AuthService {
         }
 
         User newUser = new User();
-        newUser.setUserName(userDTO.getUserName());
-        newUser.setEmail(userDTO.getEmail());
-        newUser.setPhoneNumber(userDTO.getPhoneNumber());
-        newUser.setAddress(userDTO.getAddress());
-        newUser.setRole(userDTO.getRole());
-        newUser.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
+        newUser.setUserName(user.getUserName());
+        newUser.setEmail(user.getEmail());
+        newUser.setPhoneNumber(user.getPhoneNumber());
+        newUser.setAddress(user.getAddress());
+        newUser.setRole(user.getRole());
+        newUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(newUser);
-        return convertToDto(savedUser);
+        logger.info("User signed up successfully: {}", savedUser.getEmail()); // Log successful signup
+        return savedUser;
+    }
+
+    public User login(User currUser) {
+        String email = currUser.getEmail();
+        logger.info("Received login request for email: {}", email); // Use logger
+        User user = null;
+        try {
+            user = userRepository.getByEmail(email);
+        } catch (EmptyResultDataAccessException e) {
+            logger.error("User not found for email: {}", email); // Log error
+            throw new NotFoundException("User not found");
+        }
+        logger.debug("Encoded password from DB: {}", user.getPassword()); // Use logger and debug
+        logger.debug("Raw password from request: {}", currUser.getPassword()); // Use logger and debug
+        if (bCryptPasswordEncoder.matches(currUser.getPassword(), user.getPassword())) {
+            logger.info("Login successful for user: {}", email); // Log successful login
+            return user;
+        } else {
+            logger.warn("Invalid password for user: {}", email); // Log warning
+            throw new NotFoundException("Invalid password");
+        }
     }
 
     private UserDTO convertToDto(User user) {
@@ -60,10 +76,8 @@ public class AuthService {
                 user.getUserId(),
                 user.getUserName(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getPhoneNumber(),
                 user.getAddress(),
-                user.getRole(),
-        		null);
+                user.getRole());
     }
 }

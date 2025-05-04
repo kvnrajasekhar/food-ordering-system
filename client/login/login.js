@@ -38,6 +38,7 @@ $(document).ready(function () {
         console.log("User Role:", userRole);
         console.log("User ID:", userId);
         localStorage.setItem("userId", userId);
+        localStorage.setItem("userRole", userRole); 
         if (userRole === "restaurant") {
           window.location.href = "../restaurant/owner.html"; 
         } else if (userRole === "customer") {
@@ -46,7 +47,7 @@ $(document).ready(function () {
           console.error("Unknown user role:", userRole);
           alert("Unknown user role. Please contact support.");
           localStorage.setItem("errmsg", "Unknown user role.");
-          window.location.href = "./404error.html"; 
+          // window.location.href = "./404error.html"; 
         }
         localStorage.removeItem("errmsg"); 
       },

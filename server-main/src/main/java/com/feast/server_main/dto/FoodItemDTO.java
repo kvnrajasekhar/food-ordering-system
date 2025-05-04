@@ -1,6 +1,5 @@
 package com.feast.server_main.dto;
 
-import com.feast.server_main.model.Restaurant;
 
 
 
@@ -9,19 +8,17 @@ public class FoodItemDTO {
     private Integer foodId;
     private String foodName;
     private String foodType; 
-    private Restaurant restaurant; 
     private String description;
     private Float price;
     private String imageURL;
     private Double rating;
 
-	public FoodItemDTO(Integer foodId, String foodName, String foodType,Restaurant restaurant, String description, Float price,
+	public FoodItemDTO(Integer foodId, String foodName, String foodType, String description, Float price,
 			String imageURL, Double rating) {
 		super();
 		this.foodId = foodId;
 		this.foodName = foodName;
 		this.foodType = foodType;
-		this.restaurant = restaurant;
 		this.description = description;
 		this.price = price;
 		this.imageURL = imageURL;
@@ -52,13 +49,6 @@ public class FoodItemDTO {
         this.foodType = foodType;
     }
     
-	public Restaurant getRestaurant() {
-		return restaurant;
-	}
-
-	public void setRestaurant(Restaurant restaurant) {
-		this.restaurant = restaurant;
-	}
 
 	public String getDescription() {
 		return description;

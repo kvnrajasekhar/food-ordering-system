@@ -1,56 +1,62 @@
 $(document).ready(function () {
+  const userRole = localStorage.getItem("userRole");
+  if (userRole !== "customer") {
+    localStorage.setItem("errmsg", "User is not a customer.");
+    window.location.href = "../layouts/404error.html";
+  }
   const cartItemsContainer = $("#cart-items");
   const emptyCartMessage = $("#empty-cart-message");
   const orderSummary = $("#order-summary");
-  let cartDataGlobal = []; 
-  
+  let cartDataGlobal = [];
 
   fetch("../layouts/nav.html")
-  .then((response) => response.text())
-  .then((navbarHTML) => {
-    $("#navbar-container").html(navbarHTML);
-    const $logoutLink = $("#logout-link"); 
+    .then((response) => response.text())
+    .then((navbarHTML) => {
+      $("#navbar-container").html(navbarHTML);
+      const $logoutLink = $("#logout-link");
 
-    if ($logoutLink.length) {
-      $logoutLink.on("click", function (e) {
-        e.preventDefault();
-        console.log("before logout", localStorage.getItem("userId"));
-        localStorage.removeItem("userId");
-        console.log("after logout", localStorage.getItem("userId"));
-        window.location.replace("../../login/login.html");
-      });
-    } else {
-      console.warn("#logout-link not found in loaded navbar!");
-    }
-  })
-  .catch((error) => {
-    console.error("Failed to load navbar:", error);
-  });
-
+      if ($logoutLink.length) {
+        $logoutLink.on("click", function (e) {
+          e.preventDefault();
+          console.log("before logout", localStorage.getItem("userId"));
+          localStorage.removeItem("userId");
+          localStorage.removeItem("userRole");
+          console.log("after logout", localStorage.getItem("userId"));
+          window.location.replace("../../login/login.html");
+        });
+      } else {
+        console.warn("#logout-link not found in loaded navbar!");
+      }
+    })
+    .catch((error) => {
+      console.error("Failed to load navbar:", error);
+    });
 
   function fetchCartItems() {
-    
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
 
     if (!userId) {
       console.error("userId is missing.");
       const errmsg = "Missing User Information! Please login again.";
-      localStorage.setItem("errmsg",errmsg)
+      localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
-      return; 
+      return;
     }
     $.ajax({
-      url: `http://localhost:8081/customer/cart?userId=${userId}`, 
+      url: `http://localhost:8081/customer/cart?userId=${userId}`,
       method: "GET",
       dataType: "json",
-      success: function (cartData) {
-        cartDataGlobal = cartData; 
-        renderCartItems(cartData);
+      success: function (response) {
+        cartDataGlobal = response.details;
+        renderCartItems(response.details);
       },
       error: function (xhr, status, error) {
         console.error("Error fetching cart items:", error);
-        const errmsg = "Status Code '"+xhr.status+ "' : Can't fetch your cart! Please login again.";
-        localStorage.setItem("errmsg",errmsg)
+        const errmsg =
+          "Status Code '" +
+          xhr.status +
+          "' : Can't fetch your cart! Please login again.";
+        localStorage.setItem("errmsg", errmsg);
         window.location.href = `../layouts/404error.html`;
         emptyCartMessage.hide();
         orderSummary.hide();
@@ -59,34 +65,32 @@ $(document).ready(function () {
   }
 
   function renderCartItems(items) {
-    let delivery_fee = 2.99; 
+    let delivery_fee = 2.99;
     cartItemsContainer.empty();
     let subtotal = 0;
-    const browseRestaurantButton = $('#browse-restaurant'); 
-    let cartContainer =  $("#cart-container-head");
+    const browseRestaurantButton = $("#browse-restaurant");
+    let cartContainer = $("#cart-container-head");
     let checkoutButton = $("#checkout-link");
 
-    checkoutButton.attr("href", `./checkout.html`); 
+    checkoutButton.attr("href", `./checkout.html`);
     if (items && items.length === 0) {
       emptyCartMessage.show();
       orderSummary.hide();
       cartItemsContainer.hide();
       cartContainer.hide();
 
-      
-      const userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem("userId");
       if (userId) {
-
-        browseRestaurantButton.attr(
-          "href",
-          `../restaurant-menu/resto.html`
-        );
+        browseRestaurantButton.attr("href", `../restaurant-menu/resto.html`);
       } else {
-        const errmsg = "Status Code '"+xhr.status+ "' : Missing User Information! Please login again.";
-        localStorage.setItem("errmsg",errmsg)
+        const errmsg =
+          "Status Code '" +
+          xhr.status +
+          "' : Missing User Information! Please login again.";
+        localStorage.setItem("errmsg", errmsg);
         window.location.href = `../layouts/404error.html`;
       }
-      return; 
+      return;
     }
 
     if (items && items.length > 0) {
@@ -98,29 +102,20 @@ $(document).ready(function () {
 
         const cartItem = $('<div class="cart-item">');
         cartItem.html(`
-              <img src="${
-                item.foodItem.imageURL ||
-                "../products/img/default-food.png"
-              }" alt="${item.foodItem.foodName}">
-              <div>
-                <h5>${item.foodItem.foodName.replace(/_/g, " ")}</h5>
-                <p>₹${
-                  item.foodItem.price
-                    ? item.foodItem.price.toFixed(2)
-                    : "N/A"
-                }</p>
-              </div>
-              <div class="quantity-controls" data-order-id="${
-                item.orderId
-              }">
-                <button class="quantity-decrease">-</button>
-                <span class="item-quantity">${item.quantity}</span>
-                <button class="quantity-increase">+</button>
-              </div>
-              <strong>₹${(item.foodItem.price * item.quantity).toFixed(
-                2
-              )}</strong>
-            `);
+ 					<img src="${
+            item.foodItem.imageURL || "../products/img/default-food.png"
+          }" alt="${item.foodItem.foodName}">
+ 					<div>
+ 						<h5>${item.foodItem.foodName.replace(/_/g, " ")}</h5>
+ 						<p>₹${item.foodItem.price ? item.foodItem.price.toFixed(2) : "N/A"}</p>
+ 					</div>
+ 					<div class="quantity-controls" data-order-id="${item.orderId}">
+ 						<button class="quantity-decrease">-</button>
+ 						<span class="item-quantity">${item.quantity}</span>
+ 						<button class="quantity-increase">+</button>
+ 					</div>
+ 					<strong>₹${(item.foodItem.price * item.quantity).toFixed(2)}</strong>
+ 				`);
         cartItemsContainer.append(cartItem);
       });
 
@@ -134,7 +129,7 @@ $(document).ready(function () {
           const orderId = $(this)
             .closest(".quantity-controls")
             .data("order-id");
-          const userId = getUrlParameter('userId'); 
+          const userId = localStorage.getItem("userId");
           changeQuantity(orderId, 1, userId);
         });
 
@@ -144,7 +139,7 @@ $(document).ready(function () {
           const orderId = $(this)
             .closest(".quantity-controls")
             .data("order-id");
-          const userId = getUrlParameter('userId'); 
+          const userId = localStorage.getItem("userId");
           changeQuantity(orderId, -1, userId);
         });
     } else {
@@ -153,7 +148,14 @@ $(document).ready(function () {
     }
   }
   function changeQuantity(orderId, change, userId) {
-    console.log("Change quantity for orderId:", orderId, "Change:", change, "userId:", userId);
+    console.log(
+      "Change quantity for orderId:",
+      orderId,
+      "Change:",
+      change,
+      "userId:",
+      userId
+    );
 
     const quantityControls = $(
       `.quantity-controls[data-order-id="${orderId}"]`
@@ -162,8 +164,8 @@ $(document).ready(function () {
 
     if (!quantitySpan || quantitySpan.length === 0) {
       console.error("Could not find quantity span for orderId:", orderId);
-      const errmsg =  "There is no quantity found!";
-      localStorage.setItem("errmsg",errmsg)
+      const errmsg = "There is no quantity found!";
+      localStorage.setItem("errmsg", errmsg);
       window.location.href = `../layouts/404error.html`;
       return;
     }
@@ -185,27 +187,34 @@ $(document).ready(function () {
         data: JSON.stringify({ quantity: String(newQuantity) }),
         success: function (response) {
           console.log("Quantity updated successfully for orderId:", orderId);
-          fetchCartItems(); 
+          fetchCartItems();
         },
         error: function (xhr, status, error) {
           console.error("Error updating cart item quantity:", error);
-          const errmsg = "Status Code '"+xhr.status+ "' : Failed to update item quantity. Please try again.";
-          localStorage.setItem("errmsg",errmsg)
+          const errmsg =
+            "Status Code '" +
+            xhr.status +
+            "' : Failed to update item quantity. Please try again.";
+          localStorage.setItem("errmsg", errmsg);
           window.location.href = `../layouts/404error.html`;
         },
       });
     } else if (newQuantity === 0) {
+      userId = localStorage.getItem("userId");
       $.ajax({
-        url: `http://localhost:8081/customer/cart/${orderId}?userId=${userId}`, 
+        url: `http://localhost:8081/customer/cart/clear?userId=${userId}`,
         method: "DELETE",
         success: function (response) {
           console.log("Item removed successfully for orderId:", orderId);
-          fetchCartItems(); 
+          fetchCartItems();
         },
         error: function (xhr, status, error) {
           console.error("Error removing item:", error);
-          const errmsg = "Status Code '"+xhr.status+ "' : Failed to remove item from cart. Please try again.";
-          localStorage.setItem("errmsg",errmsg)
+          const errmsg =
+            "Status Code '" +
+            xhr.status +
+            "' : Failed to remove item from cart. Please try again.";
+          localStorage.setItem("errmsg", errmsg);
           window.location.href = `../layouts/404error.html`;
           alert("Failed to remove item from cart.");
         },
@@ -213,5 +222,5 @@ $(document).ready(function () {
     }
   }
 
-  fetchCartItems(); 
+  fetchCartItems();
 });

@@ -72,6 +72,5 @@ public class RestaurantDTO {
 		this.ownerName = ownerName;
 	}
     
-    
-
+   
 }
