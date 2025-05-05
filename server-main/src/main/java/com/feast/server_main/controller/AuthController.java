@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.User;
 import com.feast.server_main.service.AuthService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,10 +34,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user) {
+    public ResponseEntity<UserDTO> login(@RequestBody User user) {
         logger.info("Received login request for email: {}", user.getEmail());
         try {
-            User loggedInUser = authService.login(user);
+            UserDTO loggedInUser = authService.login(user);
             logger.info("Login successful for user: {}", user.getEmail());
             return ResponseEntity.ok(loggedInUser);
         } catch (NotFoundException e) {

@@ -1,6 +1,7 @@
 package com.feast.server_main.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -21,9 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.feast.server_main.dto.FoodItemDTO;
+import com.feast.server_main.dto.ResFoodItemDTO;
+import com.feast.server_main.dto.RestaurantOrderStatusDTO;
 import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.FoodItem;
+import com.feast.server_main.model.Restaurant;
 import com.feast.server_main.model.RestaurantOrderStatus;
+import com.feast.server_main.model.User;
 import com.feast.server_main.service.*;
 import com.feast.server_main.response.StandardResponse; 
 
@@ -38,7 +43,7 @@ public class RestaurantController {
 	private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 
 	@PostMapping("/create")
-	public ResponseEntity<StandardResponse<UserDTO>> createRestaurant(
+	public ResponseEntity<StandardResponse<User>> createRestaurant(
 			@RequestParam("userId") Integer userId,
 			@RequestParam("restaurantName") String restaurantName,
 			@RequestParam("restaurantAddress") String restaurantAddress,
@@ -46,11 +51,11 @@ public class RestaurantController {
 			@RequestParam("ownerName") String ownerName) {
 		logger.info("Creating restaurant for userId: {}", userId);
 		try {
-			UserDTO userDTO = restaurantService.createRestaurantForExistingUser(userId, restaurantName, restaurantAddress,
+			User user = restaurantService.createRestaurantForExistingUser(userId, restaurantName, restaurantAddress,
 					cuisine, ownerName);
 			logger.info("Restaurant created successfully for userId: {}", userId);
 			return new ResponseEntity<>(
-					new StandardResponse<>(HttpStatus.CREATED.value(), "Restaurant created successfully", userDTO),
+					new StandardResponse<>(HttpStatus.CREATED.value(), "Restaurant created successfully", user),
 					HttpStatus.CREATED);
 		} catch (IllegalArgumentException e) {
 			logger.error("Error creating restaurant: {}", e.getMessage());
@@ -143,14 +148,14 @@ public class RestaurantController {
 	}
 
 	@GetMapping("/{restaurantId}/food-items")
-	public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getFoodItemsByRestaurant(
+	public ResponseEntity<StandardResponse<List<ResFoodItemDTO>>> getFoodItemsByRestaurant(
 			@PathVariable Integer restaurantId) {
 		logger.info("Getting food items for restaurantId: {}", restaurantId);
 		try {
-			List<FoodItemDTO> foodItemDTOs = restaurantService.getFoodItemsByRestaurant(restaurantId);
-			logger.info("Retrieved {} food items for restaurantId: {}", foodItemDTOs.size(), restaurantId);
+			List<ResFoodItemDTO> foodItem = restaurantService.getFoodItemsByRestaurant(restaurantId);
+			logger.info("Retrieved {} food items for restaurantId: {}", foodItem.size(), restaurantId);
 			return new ResponseEntity<>(
-					new StandardResponse<>(HttpStatus.OK.value(), "Food items retrieved successfully", foodItemDTOs),
+					new StandardResponse<>(HttpStatus.OK.value(), "Food items retrieved successfully", foodItem),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error getting food items by restaurant: {}", e.getMessage());
@@ -160,13 +165,13 @@ public class RestaurantController {
 	}
 
 	@PutMapping("/food-item/{foodItemId}")
-    public ResponseEntity<StandardResponse<FoodItemDTO>> updateFoodItem(
+    public ResponseEntity<StandardResponse<ResFoodItemDTO>> updateFoodItem(
             @PathVariable Integer foodItemId,
             @RequestBody FoodItem foodItem) {
         logger.info("Updating food item with ID: {}", foodItemId);
         try {
             FoodItem updatedFoodItem = restaurantService.updateFoodItem(foodItemId, foodItem);
-            FoodItemDTO foodItemDTO = restaurantService.convertToDto(updatedFoodItem);
+            ResFoodItemDTO foodItemDTO = restaurantService.mapToResFoodDto(updatedFoodItem);
             logger.info("Food item updated successfully: {}", updatedFoodItem.getFoodName());
             return new ResponseEntity<>(
                     new StandardResponse<>(HttpStatus.OK.value(), "Food item updated", foodItemDTO),
@@ -201,11 +206,11 @@ public class RestaurantController {
 
 	// Get order status by order ID
 	@GetMapping("/order/{orderId}/status")
-	public ResponseEntity<StandardResponse<RestaurantOrderStatus>> getOrderStatusByOrderId(
+	public ResponseEntity<StandardResponse<RestaurantOrderStatusDTO>> getOrderStatusByOrderId(
 			@PathVariable Integer orderId) {
 		logger.info("Getting order status for order ID: {}", orderId);
 		try {
-			RestaurantOrderStatus orderStatus = restaurantService.getOrderStatusByOrderId(orderId);
+			RestaurantOrderStatusDTO orderStatus = restaurantService.getOrderStatusByOrderId(orderId);
 			if (orderStatus != null) {
 				logger.info("Order status found for order ID {}: {}", orderId, orderStatus.getStatus());
 				return new ResponseEntity<>(
@@ -221,11 +226,11 @@ public class RestaurantController {
 	}
 
 	@GetMapping("/order/{restaurantId}/statuses")
-	public ResponseEntity<StandardResponse<List<RestaurantOrderStatus>>> getAllOrderStatusesByRestaurantId(
+	public ResponseEntity<StandardResponse<List<RestaurantOrderStatusDTO>>> getAllOrderStatusesByRestaurantId(
 			@PathVariable Integer restaurantId) {
 		logger.info("Getting all order statuses for restaurant ID: {}", restaurantId);
 		try {
-			List<RestaurantOrderStatus> orderStatuses = restaurantService
+			List<RestaurantOrderStatusDTO> orderStatuses = restaurantService
 					.getAllOrderStatusesByRestaurantId(restaurantId);
 			logger.info("Retrieved {} order statuses for restaurant ID: {}", orderStatuses.size(), restaurantId);
 			return new ResponseEntity<>(
@@ -238,26 +243,67 @@ public class RestaurantController {
 	}
 
 	@PutMapping("/order/status")
-	public ResponseEntity<StandardResponse<RestaurantOrderStatus>> updateOrderStatus(
-			@RequestBody RestaurantOrderStatus orderStatus) {
-		logger.info("Updating order status for order ID: {}", orderStatus.getOrder().getOrderId());
-		try {
-			RestaurantOrderStatus updatedOrderStatus = restaurantService.updateOrderStatus(orderStatus);
-			logger.info("Order status updated successfully for order ID: {}", orderStatus.getOrder().getOrderId());
-			return new ResponseEntity<>(
-					new StandardResponse<>(HttpStatus.OK.value(), "Order status updated", updatedOrderStatus), HttpStatus.OK);
-		} catch (Exception e) {
-			logger.error("Error updating order status: {}", e.getMessage());
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update order status", e);
-		}
+	public ResponseEntity<StandardResponse<RestaurantOrderStatusDTO>> updateOrderStatus(
+	        @RequestBody Map<String, Object> requestBody) {
+	    logger.info("Updating order status with request body: {}", requestBody);
+	    try {
+	        // Extract order details
+	        Map<String, Object> orderMap = (Map<String, Object>) requestBody.get("order");
+	        Integer orderId = null;
+	        if (orderMap != null && orderMap.containsKey("orderId")) {
+	            Object orderIdObj = orderMap.get("orderId");
+	            if (orderIdObj instanceof Integer) {
+	                orderId = (Integer) orderIdObj;
+	            } else if (orderIdObj instanceof String) {
+	                orderId = Integer.parseInt((String) orderIdObj);
+	            }
+	        }
+
+	        // Extract status
+	        String status = (String) requestBody.get("status");
+
+	        // Extract restaurant ID
+	        Integer restaurantId = null;
+	        if (requestBody.containsKey("restaurant")) {
+	            Map<String, Object> restaurantMap = (Map<String, Object>) requestBody.get("restaurant");
+	            if (restaurantMap != null && restaurantMap.containsKey("restaurantId")) {
+	                Object resIdObj = restaurantMap.get("restaurantId");
+	                if (resIdObj instanceof Integer) {
+	                    restaurantId = (Integer) resIdObj;
+	                } else if (resIdObj instanceof String) {
+	                    restaurantId = Integer.parseInt((String) resIdObj);
+	                }
+	            }
+	        }
+
+	        if (orderId == null || status == null || restaurantId == null) {
+	            logger.error("Missing or invalid required parameters in the request body.");
+	            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing or invalid orderId, status, or restaurantId.");
+	        }
+
+	        RestaurantOrderStatusDTO updatedOrderStatus = restaurantService.updateOrderStatus(orderId, status, restaurantId);
+	        logger.info("Order status updated successfully for order ID: {}", orderId);
+	        return new ResponseEntity<>(
+	                new StandardResponse<>(HttpStatus.OK.value(), "Order status updated", updatedOrderStatus), HttpStatus.OK);
+	    } catch (NumberFormatException e) {
+	        logger.error("Error updating order status: Invalid ID format", e);
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID format.", e);
+	    } catch (IllegalArgumentException e) {
+	        logger.error("Error updating order status: {}", e.getMessage());
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+	    } catch (Exception e) {
+	        logger.error("Error updating order status: {}", e.getMessage());
+	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update order status", e);
+	    }
 	}
+    
 
 	// Get all order status
 	@GetMapping("/order/status/all")
-	public ResponseEntity<StandardResponse<List<RestaurantOrderStatus>>> getAllOrderStatus() {
+	public ResponseEntity<StandardResponse<List<RestaurantOrderStatusDTO>>> getAllOrderStatus() {
 		logger.info("Getting all order statuses");
 		try {
-			List<RestaurantOrderStatus> allOrderStatus = restaurantService.getAllOrderStatus();
+			List<RestaurantOrderStatusDTO> allOrderStatus = restaurantService.getAllOrderStatus();
 			logger.info("Retrieved {} order statuses in total.", allOrderStatus.size());
 			return new ResponseEntity<>(
 					new StandardResponse<>(HttpStatus.OK.value(), "All order statuses retrieved", allOrderStatus),

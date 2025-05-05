@@ -102,20 +102,20 @@ $(document).ready(function () {
 
         const cartItem = $('<div class="cart-item">');
         cartItem.html(`
- 					<img src="${
+          <img src="${
             item.foodItem.imageURL || "../products/img/default-food.png"
           }" alt="${item.foodItem.foodName}">
- 					<div>
- 						<h5>${item.foodItem.foodName.replace(/_/g, " ")}</h5>
- 						<p>₹${item.foodItem.price ? item.foodItem.price.toFixed(2) : "N/A"}</p>
- 					</div>
- 					<div class="quantity-controls" data-order-id="${item.orderId}">
- 						<button class="quantity-decrease">-</button>
- 						<span class="item-quantity">${item.quantity}</span>
- 						<button class="quantity-increase">+</button>
- 					</div>
- 					<strong>₹${(item.foodItem.price * item.quantity).toFixed(2)}</strong>
- 				`);
+          <div>
+            <h5>${item.foodItem.foodName.replace(/_/g, " ")}</h5>
+            <p>₹${item.foodItem.price ? item.foodItem.price.toFixed(2) : "N/A"}</p>
+          </div>
+          <div class="quantity-controls" data-order-id="${item.orderId}">
+            <button class="quantity-decrease">-</button>
+            <span class="item-quantity">${item.quantity}</span>
+            <button class="quantity-increase">+</button>
+          </div>
+          <strong>₹${(item.foodItem.price * item.quantity).toFixed(2)}</strong>
+        `);
         cartItemsContainer.append(cartItem);
       });
 
@@ -200,23 +200,21 @@ $(document).ready(function () {
         },
       });
     } else if (newQuantity === 0) {
-      userId = localStorage.getItem("userId");
       $.ajax({
-        url: `http://localhost:8081/customer/cart/clear?userId=${userId}`,
+        url: `http://localhost:8081/customer/item/clear/${orderId}?userId=${userId}`, // Use the DELETE endpoint
         method: "DELETE",
         success: function (response) {
           console.log("Item removed successfully for orderId:", orderId);
-          fetchCartItems();
+          fetchCartItems(); // Refresh the cart display
         },
         error: function (xhr, status, error) {
-          console.error("Error removing item:", error);
+          console.error("Error removing item from cart:", error);
           const errmsg =
             "Status Code '" +
             xhr.status +
             "' : Failed to remove item from cart. Please try again.";
           localStorage.setItem("errmsg", errmsg);
           window.location.href = `../layouts/404error.html`;
-          alert("Failed to remove item from cart.");
         },
       });
     }

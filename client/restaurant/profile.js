@@ -72,7 +72,7 @@ function fetchUserProfile(userId) {
         const errmsg =
           "No data received from server. Please check the API response.";
         localStorage.setItem("errmsg", errmsg);
-        // window.location.href = `./layouts/404error.html`;
+        window.location.href = `./layouts/404error.html`;
       }
     },
     error: function (xhr, status, error) {
@@ -94,7 +94,7 @@ function displayProfile(data) {
     const errmsg =
       "Invalid data received from server.  Please check the API response.";
     localStorage.setItem("errmsg", errmsg);
-    // window.location.href = `./layouts/404error.html`;
+    window.location.href = `./layouts/404error.html`;
   }
 }
 
@@ -109,7 +109,7 @@ function populateEditForm(data) {
     const errmsg =
       "Invalid data received from server.  Please check the API response.";
     localStorage.setItem("errmsg", errmsg);
-    // window.location.href = `./layouts/404error.html`;
+    window.location.href = `./layouts/404error.html`;
   }
 }
 

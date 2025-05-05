@@ -1,11 +1,9 @@
 package com.feast.server_main.dto;
 
-import com.feast.server_main.model.User;
 
 public class RestaurantDTO {
 	
     private Integer restaurantId;
-    private User user;
     private String restaurantName;
     private String address;
     private String cuisine;
@@ -14,10 +12,9 @@ public class RestaurantDTO {
     public RestaurantDTO() {
     	
     }
-	public RestaurantDTO(Integer restaurantId,User user, String restaurantName, String address, String cuisine, String ownerName) {
+	public RestaurantDTO(Integer restaurantId, String restaurantName, String address, String cuisine, String ownerName) {
 		super();
 		this.restaurantId = restaurantId;
-		this.user = user;
 		this.restaurantName = restaurantName;
 		this.address = address;
 		this.cuisine = cuisine;
@@ -32,14 +29,6 @@ public class RestaurantDTO {
 		this.restaurantId = restaurantId;
 	}
 	
-	public User getUser() {
-		return user;
-	}
-	
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 	public String getRestaurantName() {
 		return restaurantName;
 	}
