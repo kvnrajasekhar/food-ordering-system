@@ -130,6 +130,7 @@ function saveUserProfile(userId) {
       const $editProfileSection = $("#editProfileSection"); 
       $editProfileSection.hide();
       $profileSection.show();
+      fetchUserProfile(userId); 
     },
     error: function (xhr, status, error) {
       console.error("Error updating profile:", xhr.responseText, status, error);

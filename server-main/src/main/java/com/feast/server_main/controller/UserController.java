@@ -19,9 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.feast.server_main.dto.CusOrderDTO;
 import com.feast.server_main.dto.FoodItemDTO;
 import com.feast.server_main.dto.OrderDTO;
+import com.feast.server_main.dto.ResFoodItemDTO;
 import com.feast.server_main.dto.RestaurantDTO;
+import com.feast.server_main.dto.RestaurantOrderStatusDTO;
 import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.Order;
 import com.feast.server_main.model.RestaurantOrderStatus;
@@ -38,15 +41,31 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/food-items")
-    public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getAllFoodItems() {
+    public ResponseEntity<StandardResponse<List<ResFoodItemDTO>>> getAllFoodItems() {
         logger.info("Getting all food items for customer.");
         try {
-            List<FoodItemDTO> foodItems = userService.getAllFoodItems();
+            List<ResFoodItemDTO> foodItems = userService.getAllFoodItems();
             logger.info("Retrieved {} food items.", foodItems.size());
             return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", foodItems), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error retrieving food items: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve food items", e);
+        }
+    }
+    
+    @GetMapping("/food-items/{foodItemId}/restaurant")
+    public ResponseEntity<StandardResponse<Integer>> getRestaurantIdByFoodItemId(@PathVariable Integer foodItemId) {
+        logger.info("Getting restaurant ID for food item ID: {}", foodItemId);
+        try {
+            Integer restaurantId = userService.getRestaurantIdByFoodItemId(foodItemId);
+            logger.info("Retrieved restaurant ID: {} for food item ID: {}", restaurantId, foodItemId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", restaurantId), HttpStatus.OK);
+        } catch (IllegalArgumentException e) { 
+            logger.warn("Food item with ID {} not found.", foodItemId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.NOT_FOUND.value(), "Food item not found", null), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            logger.error("Error retrieving restaurant ID for food item ID {}: {}", foodItemId, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve restaurant ID", e);
         }
     }
 
@@ -64,11 +83,11 @@ public class UserController {
     }
 
     @GetMapping("/restaurants/{restaurantId}/food-items")
-    public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getFoodItemsByRestaurant(
+    public ResponseEntity<StandardResponse<List<ResFoodItemDTO>>> getFoodItemsByRestaurant(
             @PathVariable Integer restaurantId) {
         logger.info("Getting food items for restaurantId: {}", restaurantId);
         try {
-            List<FoodItemDTO> foodItems = userService.getFoodItemsByRestaurant(restaurantId);
+            List<ResFoodItemDTO> foodItems = userService.getFoodItemsByRestaurant(restaurantId);
             logger.info("Retrieved {} food items for restaurantId: {}", foodItems.size(), restaurantId);
             return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", foodItems), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -81,10 +100,10 @@ public class UserController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<StandardResponse<OrderDTO>> placeOrder(@RequestBody OrderDTO orderDTO) {
+    public ResponseEntity<StandardResponse<CusOrderDTO>> placeOrder(@RequestBody OrderDTO orderDTO) {
         logger.info("Placing order: {}", orderDTO);
         try {
-            OrderDTO placedOrder = userService.placeOrder(orderDTO);
+            CusOrderDTO placedOrder = userService.placeOrder(orderDTO);
             logger.info("Order placed successfully. Order ID: {}", placedOrder.getOrderId());
             return new ResponseEntity<>(
                     new StandardResponse<>(HttpStatus.CREATED.value(), "Order placed successfully", placedOrder),
@@ -115,11 +134,11 @@ public class UserController {
     }
 
     @PutMapping("/cart/{orderId}")
-    public ResponseEntity<StandardResponse<Order>> updateOrder(@PathVariable Integer orderId,
+    public ResponseEntity<StandardResponse<OrderDTO>> updateOrder(@PathVariable Integer orderId,
             @RequestParam("userId") Integer userId, @RequestBody OrderDTO orderDTO) {
         logger.info("Updating orderId: {} for userId: {} with orderDTO: {}", orderId, userId, orderDTO);
         try {
-            Order orderUpdated = userService.updateOrderQuantity(orderId, orderDTO.getQuantity(), userId);
+            OrderDTO orderUpdated = userService.updateOrderQuantity(orderId, orderDTO.getQuantity(), userId);
             logger.info("Order updated successfully. Order ID: {}", orderId);
             return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Successfully updated", orderUpdated),
                     HttpStatus.OK);
@@ -147,6 +166,23 @@ public class UserController {
         } catch (Exception e) {
             logger.error("Error clearing cart for userId: {}", userId, e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to clear cart", e);
+        }
+    }
+    
+    
+    @DeleteMapping("/item/clear/{orderId}")
+    public ResponseEntity<StandardResponse<Void>> removeOrderItem(@PathVariable Integer orderId, @RequestParam("userId") Integer userId) {
+        logger.info("Removing order item with orderId: {} for userId: {}", orderId, userId);
+        try {
+            userService.removeOrderItem(orderId, userId);
+            logger.info("Order item removed successfully. Order ID: {}", orderId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Successfully removed item", null), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid request to remove order item. orderId: {}, userId: {}", orderId, userId, e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error removing order item. orderId: {}, userId: {}", orderId, userId, e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to remove order item", e);
         }
     }
 
@@ -183,11 +219,11 @@ public class UserController {
     }
 
     @PostMapping("/order/status")
-    public ResponseEntity<StandardResponse<RestaurantOrderStatus>> updateOrderStatus(@RequestBody RestaurantOrderStatus orderStatusDTO) {
+    public ResponseEntity<StandardResponse<RestaurantOrderStatusDTO>> updateOrderStatus(@RequestBody RestaurantOrderStatus orderStatusDTO) {
         logger.info("Updating order status: {}", orderStatusDTO);
         try {
-            RestaurantOrderStatus savedOrderStatus = userService.updateOrderStatus(orderStatusDTO);
-            logger.info("Order status updated successfully. Order ID: {}", savedOrderStatus.getOrder().getOrderId());
+            RestaurantOrderStatusDTO savedOrderStatus = userService.updateOrderStatus(orderStatusDTO);
+            logger.info("Order status updated successfully. Order ID: {}", savedOrderStatus.getOrderDTO().getOrderId());
             return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Order status updated", savedOrderStatus), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             logger.error("Invalid order status update request: {}", orderStatusDTO, e);

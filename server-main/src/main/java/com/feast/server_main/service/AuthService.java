@@ -50,7 +50,7 @@ public class AuthService {
         return savedUser;
     }
 
-    public User login(User currUser) {
+    public UserDTO login(User currUser) {
         String email = currUser.getEmail();
         logger.info("Received login request for email: {}", email); // Use logger
         User user = null;
@@ -64,7 +64,7 @@ public class AuthService {
         logger.debug("Raw password from request: {}", currUser.getPassword()); // Use logger and debug
         if (bCryptPasswordEncoder.matches(currUser.getPassword(), user.getPassword())) {
             logger.info("Login successful for user: {}", email); // Log successful login
-            return user;
+            return convertToDto(user);
         } else {
             logger.warn("Invalid password for user: {}", email); // Log warning
             throw new NotFoundException("Invalid password");

@@ -54,7 +54,7 @@ $(document).ready(function () {
         console.error("Error fetching order status:", status, error);
         const errmsg = "Error fetching order status: " + status;
         localStorage.setItem("errmsg", errmsg);
-        window.location.href = `../layouts/404error.html`;
+        // window.location.href = `../layouts/404error.html`;
       },
     });
   }
@@ -68,17 +68,19 @@ $(document).ready(function () {
     const deliveryPartnerName = $("#delivery-partner-name");
     const deliveryPartnerVehicle = $("#delivery-partner-vehicle");
     const deliveryPartnerImage = $("#delivery-partner-image");
+    const foodOrderStatus = $("#food-status-text");
 
-    orderIdDisplay.text(orderData.order.orderId);
-    customerName.text(orderData.order.user.userName);
-    deliveryAddress.text(orderData.order.user.address);
+    orderIdDisplay.text(orderData.orderDTO.orderId);
+    customerName.text(orderData.orderDTO.user.userName);
+    deliveryAddress.text(orderData.orderDTO.user.address);
+    foodOrderStatus.text(orderData.status);
 
     let items = "";
-    if (orderData.order && orderData.order.foodItem) {
+    if (orderData.orderDTO && orderData.orderDTO.foodItem) {
       items +=
-        orderData.order.foodItem.foodName +
+        orderData.orderDTO.foodItem.foodName +
         " x " +
-        orderData.order.quantity +
+        orderData.orderDTO.quantity +
         ", ";
     }
 
@@ -132,8 +134,8 @@ $(document).ready(function () {
     if (partnerInfoDisplay === "block") {
       deliveryPartnerInfo.show();
       deliveryPartnerName.text("Alice Johnson");
-      deliveryPartnerVehicle.text("Bike (KA-01-1234)");
-      deliveryPartnerImage.attr("src", "https://via.placeholder.com/50");
+      deliveryPartnerVehicle.text("Bike (1234-25-BH)");
+      deliveryPartnerImage.attr("src", "./delivery-man.gif");
     } else {
       deliveryPartnerInfo.hide();
     }

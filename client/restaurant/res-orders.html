@@ -70,7 +70,7 @@
           .then((navbarHTML) => {
             $("#navbar-container").html(navbarHTML);
             const $logoutLink = $("#logout-link");
-    
+
             if ($logoutLink.length) {
               $logoutLink.on("click", function (e) {
                 e.preventDefault();
@@ -86,19 +86,19 @@
           .catch((error) => {
             console.error("Failed to load navbar:", error);
           });
-    
+
         const pastOrdersAccordion = $("#pastOrdersAccordion");
         const orderStatusFilter = $("#orderStatusFilter");
-    
+
         const restaurantId = localStorage.getItem("restaurantId");
-    
+
         if (!restaurantId) {
           const errmsg = "Missing Restaurant Information! Please login again.";
           localStorage.setItem("errmsg", errmsg);
           window.location.href = `../layouts/404error.html`;
           return;
         }
-    
+
         function fetchPastOrders(restaurantId) {
           $.ajax({
             url: `http://localhost:8081/restaurant/order/${restaurantId}/statuses`,
@@ -115,7 +115,7 @@
             },
           });
         }
-    
+
         const statusOptions = [
           "Pending",
           "Accepted",
@@ -125,7 +125,7 @@
           "Delivered",
           "Cancelled",
         ];
-    
+
         function renderOrders(orders) {
           pastOrdersAccordion.empty();
           if (orders.length === 0) {
@@ -134,21 +134,21 @@
             );
             return;
           }
-    
+
           let orderHTML = "";
           orders.forEach((order) => {
-            const orderId = order.order.orderId;
+            const orderId = order.orderDTO.orderId;
             const orderStatus = order.status;
             const orderDate = new Date(order.orderedAt).toLocaleDateString();
-            const restaurantName = order.restaurant.restaurantName;
-            const deliveryAddress = order.order.user.address;
-            const currentOrderId = order.order.orderId;
-    
+            const restaurantName = order.restaurantDTO.restaurantName;
+            const deliveryAddress = order.orderDTO.user.address;
+            const currentOrderId = order.orderDTO.orderId;
+
             // Extract food item details
             let itemsHTML = "";
-            if (order.order && order.order.foodItem) {
-              const foodItem = order.order.foodItem;
-              const quantity = order.order.quantity; // Get quantity from order
+            if (order.orderDTO && order.orderDTO.foodItem) {
+              const foodItem = order.orderDTO.foodItem;
+              const quantity = order.orderDTO.quantity; // Get quantity from order
               itemsHTML = `
                   <li class="d-flex justify-content-between align-items-center mb-2">
                     <span class="text-dark">
@@ -164,7 +164,7 @@
               itemsHTML =
                 "<li class='text-muted'>No items found in this order.</li>";
             }
-    
+
             let statusBadgeClass = "";
             switch (orderStatus.toLowerCase()) {
               case "pending":
@@ -191,7 +191,7 @@
               default:
                 statusBadgeClass = "badge-secondary";
             }
-    
+
             orderHTML += `
               <div class="card order-item mb-3 shadow-sm rounded">
                 <div class="card-header bg-white py-3">
@@ -236,30 +236,32 @@
               </div>
             `;
           });
-    
+
           pastOrdersAccordion.html(orderHTML);
-    
+
           $(".update-status-button").on("click", function () {
             const orderIdToUpdate = $(this).data("order-id");
             const selectedStatus = $(this)
               .siblings(".update-order-status-dropdown")
               .val();
-    
+
             if (!selectedStatus) {
               alert("Please select a status before updating.");
               return;
             }
-    
+
             console.log(
               "Updating order",
               orderIdToUpdate,
               "to status:",
-              selectedStatus
+              selectedStatus,
+              "for restaurantId:",
+              restaurantId
             );
             updateOrderStatus(orderIdToUpdate, selectedStatus, restaurantId); // Pass restaurantId
           });
         }
-    
+
         function updateOrderStatus(orderId, newStatus, restaurantId) {
           $.ajax({
             url: `http://localhost:8081/restaurant/order/status`,
@@ -268,6 +270,7 @@
             data: JSON.stringify({
               order: { orderId: orderId },
               status: newStatus,
+              restaurant: { restaurantId: restaurantId },
             }),
             success: function (response) {
               console.log("Order status updated:", response);
@@ -277,12 +280,12 @@
               console.error("Error updating order status:", error);
               const errmsg = status + "! Error updating order status ";
               localStorage.setItem("errmsg", errmsg);
-              window.location.href = `../layouts/404error.html`;
+              // window.location.href = `../layouts/404error.html`;
               alert("Failed to update order status.  Please try again.");
             },
           });
         }
-    
+
         orderStatusFilter.on("change", function () {
           var selectedStatus = $(this).val().toLowerCase();
           $(".order-item").each(function () {
@@ -297,11 +300,11 @@
             }
           });
         });
-    
+
         fetchPastOrders(restaurantId);
       });
     </script>
-    
+
     <div id="footer-container"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>

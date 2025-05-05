@@ -102,26 +102,40 @@ $(document).ready(function () {
           let imageSource =
             item.imageURL || "../../products/img/default-food.jpg";
           const $card = $("<div>").addClass("restaurant-card").html(`
-                <img src="${imageSource}" alt="${item.foodName}">
-                <div class="restaurant-info">
-                  <h4>${item.foodName.replace(/_/g, " ")}</h4>
-                  <div class="restaurant-meta">
-                    ${
-                      item.rating
-                        ? `<span class="rating">⭐ ${item.rating}</span>`
-                        : ""
-                    }
-                    <span>${item.foodType}</span>
-                  </div>
-                  <p>${
-                    item.description
-                      ? item.description.substring(0, 50) + "..."
-                      : ""
-                  }</p>
-                  <a href="../restaurant-menu/resto.html" class="view-menu">Order</a>
-                </div>
-              `);
+            <img src="${imageSource}" alt="${item.foodName}">
+            <div class="restaurant-info">
+              <h4>${item.foodName.replace(/_/g, " ")}</h4>
+              <div class="restaurant-meta">
+                ${
+                  item.rating
+                    ? `<span class="rating">⭐ ${item.rating}</span>`
+                    : ""
+                }
+                <span>${item.foodType}</span>
+              </div>
+              <p>${
+                item.description ? item.description.substring(0, 25) + "..." : ""
+              }</p>
+              <a href="" class="view-menu item-order-btn" data-food-id="${item.foodId}">Order</a>
+            </div>
+          `);
           $itemsList.append($card);
+          $card.find(".item-order-btn").on("click", function (event) {
+            event.preventDefault();
+            const foodId = $(this).data("food-id");
+            // Call getResId to get the restaurant ID
+            getResId(foodId)
+              .then(function (restaurantId) {
+                localStorage.setItem("restaurantId", restaurantId);
+                window.location.href = "../products/product.html";
+              })
+              .catch(function (error) {
+                console.error("Error getting restaurant ID:", error);
+                alert(
+                  "Failed to retrieve restaurant information. Please try again."
+                ); // basic error alert
+              });
+          });
         });
       },
       error: function (xhr, status, error) {
@@ -131,6 +145,31 @@ $(document).ready(function () {
         localStorage.setItem("errmsg", errmsg);
         window.location.href = "../layouts/404error.html";
       },
+    });
+  }
+
+  // Function to get restaurant ID by food item ID
+  function getResId(foodId) {
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`, // Corrected URL
+        method: "GET",
+        dataType: "json",
+        success: function (response) {
+          if (response && response.details) {
+            resolve(response.details); // Resolve with the restaurant ID from the response
+          } else {
+            reject(new Error("Restaurant ID not found in response")); // Reject if data is missing
+          }
+        },
+        error: function (xhr, status, error) {
+          reject(
+            new Error(
+              "Error fetching restaurant ID: " + xhr.status + " - " + error
+            )
+          ); 
+        },
+      });
     });
   }
 
@@ -166,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!response || !Array.isArray(response.details)) {
           console.error(
-            "ERROR: Invalid data from server.  Expected response.details to be an array.",
+            "ERROR: Invalid data from server.  Expected response.details to be an array.",
             response
           );
           menuContainer.html(
@@ -196,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card menu-card">
             <div class="img-wrapper">
               <img src="${randomImage}" class="card-img-top img-fluid" alt="${restaurant.restaurantName}">
-            </div>            
+            </div>            
             <div class="card-body ">
               <h5 class="card-title restaurant-name">${restaurant.restaurantName}</h5>
               <p class="card-text restaurant-address">Address: ${restaurant.address}</p>

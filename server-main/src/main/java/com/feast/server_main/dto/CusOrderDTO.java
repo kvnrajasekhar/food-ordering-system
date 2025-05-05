@@ -2,25 +2,19 @@ package com.feast.server_main.dto;
 
 import java.time.LocalDateTime;
 
-import com.feast.server_main.model.FoodItem;
-import com.feast.server_main.model.User;
 
-
-public class OrderDTO {
-
+public class CusOrderDTO {
+	
     private Integer orderId;
-    private UserDTO user;
-    private FoodItemDTO foodItem;
+    private ResFoodItemDTO resFoodItemTO;
     private Double totalPrice;
     private Integer quantity;
     private LocalDateTime date;
-    
-	public OrderDTO(Integer orderId, UserDTO user, FoodItemDTO foodItem, Double totalPrice, Integer quantity,
+	public CusOrderDTO(Integer orderId, ResFoodItemDTO resFoodItemTO, Double totalPrice, Integer quantity,
 			LocalDateTime date) {
 		super();
 		this.orderId = orderId;
-		this.user = user;
-		this.foodItem = foodItem;
+		this.resFoodItemTO = resFoodItemTO;
 		this.totalPrice = totalPrice;
 		this.quantity = quantity;
 		this.date = date;
@@ -31,17 +25,11 @@ public class OrderDTO {
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
 	}
-	public UserDTO getUser() {
-		return user;
+	public ResFoodItemDTO getResFoodItemTO() {
+		return resFoodItemTO;
 	}
-	public void setUser(UserDTO user) {
-		this.user = user;
-	}
-	public FoodItemDTO getFoodItem() {
-		return foodItem;
-	}
-	public void setFoodItem(FoodItemDTO foodItem) {
-		this.foodItem = foodItem;
+	public void setResFoodItemTO(ResFoodItemDTO resFoodItemTO) {
+		this.resFoodItemTO = resFoodItemTO;
 	}
 	public Double getTotalPrice() {
 		return totalPrice;
@@ -62,5 +50,8 @@ public class OrderDTO {
 		this.date = date;
 	}
     
+
+	
     
+
 }

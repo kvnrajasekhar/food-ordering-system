@@ -24,6 +24,7 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   padding: 20px;
+  margin-top: 90px;
 }
 
 .order-header {
@@ -47,6 +48,9 @@ body {
   font-weight: 500;
 }
 
+#order-status-text{
+  color: var(--primary);
+}
 .order-status.partner_yet_to_assign {
   background-color: #6c757d;
 }
@@ -91,8 +95,8 @@ body {
 }
 
 .delivery-partner-info img {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
 }

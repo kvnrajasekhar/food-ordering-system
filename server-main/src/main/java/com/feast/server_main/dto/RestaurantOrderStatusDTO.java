@@ -8,52 +8,63 @@ import com.feast.server_main.model.Restaurant;
 public class RestaurantOrderStatusDTO {
 	
 	private Integer restaurantOrderStatusId;
-    private Restaurant restaurant;
-    private Order order;
+    private RestaurantDTO restaurantDTO;
+    private OrderDTO orderDTO;
     private String status;
     private LocalDateTime orderedAt;
     
-	public RestaurantOrderStatusDTO(Integer restaurantOrderStatusId, Restaurant restaurant, Order order, String status,
-			 LocalDateTime orderedAt) {
+    public RestaurantOrderStatusDTO() {
+    	
+    }
+
+	public RestaurantOrderStatusDTO(Integer restaurantOrderStatusId, RestaurantDTO restaurantDTO, OrderDTO orderDTO,
+			String status, LocalDateTime orderedAt) {
 		super();
 		this.restaurantOrderStatusId = restaurantOrderStatusId;
-		this.restaurant = restaurant;
-		this.order = order;
+		this.restaurantDTO = restaurantDTO;
+		this.orderDTO = orderDTO;
 		this.status = status;
 		this.orderedAt = orderedAt;
 	}
+
 	public Integer getRestaurantOrderStatusId() {
 		return restaurantOrderStatusId;
 	}
+
 	public void setRestaurantOrderStatusId(Integer restaurantOrderStatusId) {
 		this.restaurantOrderStatusId = restaurantOrderStatusId;
 	}
-	public Restaurant getRestaurant() {
-		return restaurant;
+
+	public RestaurantDTO getRestaurantDTO() {
+		return restaurantDTO;
 	}
-	public void setRestaurant(Restaurant restaurant) {
-		this.restaurant = restaurant;
+
+	public void setRestaurantDTO(RestaurantDTO restaurantDTO) {
+		this.restaurantDTO = restaurantDTO;
 	}
-	public Order getOrder() {
-		return order;
+
+	public OrderDTO getOrderDTO() {
+		return orderDTO;
 	}
-	public void setOrder(Order order) {
-		this.order = order;
+
+	public void setOrderDTO(OrderDTO orderDTO) {
+		this.orderDTO = orderDTO;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public LocalDateTime getOrderedAt() {
 		return orderedAt;
 	}
+
 	public void setOrderedAt(LocalDateTime orderedAt) {
 		this.orderedAt = orderedAt;
 	}
-    
-   
-    
-    
+	
 }

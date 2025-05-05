@@ -1,6 +1,6 @@
 package com.feast.server_main.dto;
 
-public class FoodItemDTO {
+public class ResFoodItemDTO {
 
     private Integer foodId;
     private String foodName;
@@ -9,10 +9,9 @@ public class FoodItemDTO {
     private Float price;
     private String imageURL;
     private Double rating;
-    private RestaurantDTO restaurantDto;
     
-	public FoodItemDTO(Integer foodId, String foodName, String foodType, String description, Float price,
-			String imageURL, Double rating, RestaurantDTO restaurantDto) {
+	public ResFoodItemDTO(Integer foodId, String foodName, String foodType, String description, Float price,
+			String imageURL, Double rating) {
 		super();
 		this.foodId = foodId;
 		this.foodName = foodName;
@@ -21,55 +20,64 @@ public class FoodItemDTO {
 		this.price = price;
 		this.imageURL = imageURL;
 		this.rating = rating;
-		this.restaurantDto = restaurantDto;
 	}
+
 	public Integer getFoodId() {
 		return foodId;
 	}
+
 	public void setFoodId(Integer foodId) {
 		this.foodId = foodId;
 	}
+
 	public String getFoodName() {
 		return foodName;
 	}
+
 	public void setFoodName(String foodName) {
 		this.foodName = foodName;
 	}
+
 	public String getFoodType() {
 		return foodType;
 	}
+
 	public void setFoodType(String foodType) {
 		this.foodType = foodType;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public Float getPrice() {
 		return price;
 	}
+
 	public void setPrice(Float price) {
 		this.price = price;
 	}
+
 	public String getImageURL() {
 		return imageURL;
 	}
+
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
+
 	public Double getRating() {
 		return rating;
 	}
+
 	public void setRating(Double rating) {
 		this.rating = rating;
 	}
-	public RestaurantDTO getRestaurant() {
-		return restaurantDto;
-	}
-	public void setRestaurant(RestaurantDTO restaurantDto) {
-		this.restaurantDto = restaurantDto;
-	}
-  
+	
+ 
+    
 }
