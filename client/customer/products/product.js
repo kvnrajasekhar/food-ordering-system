@@ -121,6 +121,7 @@ $(document).ready(function () {
   }
 
   function renderProducts(products) {
+    console.log("Rendering products:", products);
     productListContainer.empty();
     if (products.length === 0) {
       productListContainer.html(
@@ -128,6 +129,10 @@ $(document).ready(function () {
       );
       return;
     }
+
+    const restaurantName = localStorage.getItem("restaurantName");
+    $("#restaurant-name").text(restaurantName);
+console.log("Restaurant Name:", restaurantName);  
     $.each(products, function (index, product) {
       const card = $('<div class="product-card">');
       const isDisabled = userCartItems.has(product.foodId);

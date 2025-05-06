@@ -83,7 +83,7 @@ $(document).ready(function () {
           success: function (response) {
               console.log("Successfully fetched food items:", response);
               if (response && response.details) {
-                  fooditem = response.details;  // Populate fooditem here
+                  fooditem = response.details;
                   renderProducts(fooditem);
               } else {
                   console.warn("No food items received from the server.");
@@ -220,7 +220,6 @@ $(document).ready(function () {
               );
           }
       } else {
-          // Clear the form for adding a new item
           $("#edit-name").val("");
           $("#edit-foodType").val("");
           $("#edit-description").val("");
@@ -257,15 +256,15 @@ $(document).ready(function () {
 
       const addItemUrl = "http://localhost:8081/restaurant/addItem";
       const updateItemUrl = `http://localhost:8081/restaurant/food-item/${currentEditItemId}`;
-      const method = currentEditItemId ? "PUT" : "POST"; // Determine the method
+      const method = currentEditItemId ? "PUT" : "POST"; 
 
       $.ajax({
-          url: currentEditItemId ? updateItemUrl : addItemUrl, // Use the correct URL
+          url: currentEditItemId ? updateItemUrl : addItemUrl, 
           method: method, // Use the determined method
           contentType: "application/json",
           data: JSON.stringify(foodItemDTO),
           success: function (response) {
-              console.log("Success:", response); // Log the entire response
+              console.log("Success:", response); 
               let updatedItem;
               if (method === "PUT") {
                 updatedItem = response.details;

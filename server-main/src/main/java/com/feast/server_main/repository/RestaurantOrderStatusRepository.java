@@ -1,6 +1,5 @@
 package com.feast.server_main.repository;
 
-import com.feast.server_main.dto.RestaurantOrderStatusDTO;
 import com.feast.server_main.model.Restaurant;
 import com.feast.server_main.model.RestaurantOrderStatus;
 

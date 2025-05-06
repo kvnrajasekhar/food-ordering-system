@@ -8,7 +8,10 @@ $(document).ready(function () {
       input.attr("type", "password");
     }
   });
-
+  localStorage.removeItem("restaurantName");
+  localStorage.removeItem("restaurantId");
+  localStorage.removeItem("foodId");
+  localStorage.removeItem("orderId");
   $("#loginForm").submit(function (event) {
     event.preventDefault();
     const email = $("#email").val();

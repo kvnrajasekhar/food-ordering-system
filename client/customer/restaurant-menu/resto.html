@@ -146,7 +146,7 @@
                                 <span>${restaurant.cuisine}</span>
                             </div>
                             <p class="mb-1">Address: ${restaurant.address}</p>
-                            <button class="view-details view-menu " data-restaurant-id="${restaurant.restaurantId}">View Details</button>
+                            <button class="view-details view-menu " data-restaurant-id="${restaurant.restaurantId}" data-restaurant-name="${restaurant.restaurantName}">View Details</button>
                         </div>
                     `);
             $restaurantListContainer.append($card);
@@ -156,6 +156,9 @@
           $(".view-details").each(function () {
             $(this).on("click", function () {
               const restaurantId = $(this).data("restaurant-id");
+              const restaurantName = $(this).data("restaurant-name");
+              localStorage.setItem("restaurantName", restaurantName);
+              console.log(restaurantName);
               const selectedRestaurant = restaurants.find(
                 (r) => r.restaurantId === parseInt(restaurantId)
               );
@@ -178,9 +181,11 @@
             `Cuisine: ${restaurant.cuisine} | Address: ${restaurant.address}`
           );
           const restaurantId = restaurant.restaurantId;
-
+          const restaurantName = localStorage.getItem("restaurantName");
+          console.log(restaurantName);
           $viewMenuButton.on("click", () => {
             localStorage.setItem("restaurantId", restaurantId);
+            localStorage.setItem("restaurantName", restaurantName);
             window.location.href = `../products/product.html`;
             itemModal.hide();
           });

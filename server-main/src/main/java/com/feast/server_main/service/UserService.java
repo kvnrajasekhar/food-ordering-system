@@ -55,15 +55,16 @@ public class UserService {
 		return restaurants.stream().map(this::mapRestaurantToDTO).collect(Collectors.toList());
 	}
 
-	public Integer getRestaurantIdByFoodItemId(Integer foodItemId) {
-
+	public RestaurantDTO getRestaurantDetailsByFoodItemId(Integer foodItemId) {
         Optional<FoodItem> foodItem = foodItemRepository.findById(foodItemId); 
         if (foodItem.isPresent()) {
-            return foodItem.get().getRestaurant().getRestaurantId();
+            return mapRestaurantToDTO(foodItem.get().getRestaurant());
         } else {
             return null;
         }
-    }
+
+	}
+	
 	public List<ResFoodItemDTO> getFoodItemsByRestaurant(Integer restaurantId) {
 		List<FoodItem> foodItems = foodItemRepository.findByRestaurant_RestaurantId(restaurantId);
 		return restaurantService.convertToResDto(foodItems);
