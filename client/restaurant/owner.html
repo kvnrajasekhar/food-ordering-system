@@ -180,7 +180,6 @@
               console.log(
                 "Error checking restaurant status: " + xhr.responseText
               );
-              //  Consider redirecting to an error page or login page
               const errmsg = status + " Error checking restaurant status";
               localStorage.setItem("errmsg", errmsg);
               window.location.href = `./layouts/404error.html`;
@@ -259,8 +258,12 @@
               ownerName: ownerName,
             },
             success: function (response) {
-              alert(response.details);
+                alert("Restaurant created successfully!");
               fetchRestaurantData(userId);
+              const restaurantCreationSection = $("#restaurant-creation-section");
+              const restaurantManagementSection = $("#restaurant-management-section");
+              restaurantCreationSection.hide();
+              restaurantManagementSection.show();
             },
             error: function (xhr, status, error) {
               alert("Error creating restaurant: " + xhr.responseText);

@@ -8,7 +8,7 @@ $(document).ready(function () {
     $(".drop-down__name").text(text);
     $(".drop-down").removeClass("drop-down--active");
     $(".role-value").val(value); 
-  }); // Close the dropdown if clicked outside
+  }); 
   $(document).on("click", function (event) {
     if (!$(event.target).closest(".drop-down-wrapper").length) {
       $(".drop-down").removeClass("drop-down--active");
@@ -19,7 +19,6 @@ $(document).ready(function () {
 $("#signupForm").submit(function (event) {
   event.preventDefault();
 
-  // Log to console to check if the function is being called.
   console.log("signupForm submit function is called!");
 
   const name = $("#name").val();
@@ -43,7 +42,6 @@ $("#signupForm").submit(function (event) {
     return;
   }
 
-  // Create user object
   const user = {
     userName: name,
     email: email,
@@ -59,18 +57,17 @@ $("#signupForm").submit(function (event) {
     url: "http://localhost:8081/signup",
     contentType: "application/json",
     data: JSON.stringify(user),
-    dataType: "json", // Expect JSON response
+    dataType: "json",
     success: function (response) {
       console.log("Signup successful:", response);
       alert("Signup successful! Please login.");
       window.location.href = "login.html"; 
     },
     error: function (xhr, status, error) {
-      // Handle signup error
       console.error("Signup error:", xhr.responseText);
       if (xhr.responseJSON && xhr.responseJSON.message) {
         window.location.href = "../layouts/404error.html"; 
-        console.log("Signup error: " + xhr.responseJSON.message); // Display server message
+        console.log("Signup error: " + xhr.responseJSON.message); 
       } else {
         alert("An error occurred during signup. Please try again later.");
       }

@@ -108,7 +108,7 @@
             "../restaurant-menu/res-images/rt7.png",
           ];
 
-        // Fetch and inject navbar, then attach event listener
+
         fetch("../layouts/nav.html")
           .then((response) => response.text())
           .then((navbarHTML) => {
@@ -152,7 +152,7 @@
             $restaurantListContainer.append($card);
           });
 
-          // Add event listeners to the newly created "View Details" buttons
+
           $(".view-details").each(function () {
             $(this).on("click", function () {
               const restaurantId = $(this).data("restaurant-id");

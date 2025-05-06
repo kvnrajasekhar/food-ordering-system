@@ -131,8 +131,10 @@ function saveUserProfile(userId) {
     success: function (response) {
       console.log("Profile updated successfully:", response);
       alert(response.message);
-      $editProfileSection.style.display = "none";
-      $profileSection.style.display = "block";
+      const $profileSection = $("#profileSection");  
+      const $editProfileSection = $("#editProfileSection"); 
+      $editProfileSection.hide();
+      $profileSection.show();
       fetchUserProfile(userId);
     },
     error: function (xhr, status, error) {

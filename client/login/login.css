@@ -67,7 +67,7 @@ body {
 .wrapper form .input-box {
   height: 52px;
   margin: 18px 0;
-  position: relative; /* Add this */
+  position: relative; 
 }
 
 form .input-box input {
@@ -89,7 +89,7 @@ form .input-box input {
   border-color: #ffc107;
 }
 
-/* Style for the custom checkbox */
+
 .policy {
   display: flex;
   align-items: center;
@@ -114,7 +114,7 @@ form .input-box input {
 }
 
 .policy input[type="checkbox"]:checked::before {
-  content: "\2713"; /* Checkmark symbol */
+  content: "\2713"; 
   font-size: 16px;
   color: #000;
   position: absolute;
@@ -166,32 +166,32 @@ form .text h3 a:hover {
 }
 
 .drop-down-wrapper {
-  height: 52px; /* Match the input box height */
-  margin: 18px 0; /* Match the input box margin */
+  height: 52px;
+  margin: 18px 0;
   position: relative;
 }
 
 .drop-down {
   position: relative;
-  width: 100%; /* Make it full width like other inputs */
+  width: 100%; 
 }
 
 .drop-down__button {
-  display: flex; /* Use flex to align text and icon */
-  justify-content: space-between; /* Space them out */
-  align-items: center; /* Vertically align */
-  line-height: 1; /* Adjust line height */
-  padding: 15px 18px; /* Adjust padding to match input height */
+  display: flex; 
+  justify-content: space-between;
+  align-items: center;
+  line-height: 1; 
+  padding: 15px 18px; 
   text-align: left;
-  border-radius: 15px; /* Match input border radius */
+  border-radius: 15px; 
   box-shadow: var(--box-shadow);
   cursor: pointer;
-  border: 1.5px solid #ccc; /* Match input border */
-  font-size: 17px; /* Match input font size */
-  font-weight: 400; /* Match input font weight */
-  color: var(--secondary); /* Match initial text color */
+  border: 1.5px solid #ccc;
+  font-size: 17px; 
+  font-weight: 400; 
+  color: var(--secondary); 
   transition: border-color 0.3s ease;
-  height: 100%; /* Fill the wrapper height */
+  height: 100%;
   box-sizing: border-box;
 }
 
@@ -208,14 +208,14 @@ form .text h3 a:hover {
 }
 
 .drop-down__icon {
-  width: 20px; /* Adjust icon size */
-  height: 20px; /* Adjust icon size */
+  width: 20px; 
+  height: 20px; 
   fill: var(--secondary);
-  transition: transform 0.3s ease-in-out; /* For rotation */
+  transition: transform 0.3s ease-in-out; 
 }
 
 .drop-down--active .drop-down__icon {
-  transform: rotate(180deg); /* Rotate the arrow when active */
+  transform: rotate(180deg); 
 }
 
 .drop-down__menu-box {
@@ -230,12 +230,12 @@ form .text h3 a:hover {
   opacity: 0;
   margin-top: 5px;
   border: 1px solid #ced4da;
-  z-index: 10; /* Ensure it's above other elements */
+  z-index: 10; 
 }
 
 .drop-down__menu {
   margin: 0;
-  padding: 8px 0; /* Adjust padding */
+  padding: 8px 0; 
   list-style: none;
 }
 
@@ -252,7 +252,7 @@ form .text h3 a:hover {
 
 .drop-down__item {
   font-size: 1rem;
-  padding: 12px 15px; /* Adjust padding */
+  padding: 12px 15px;
   text-align: left;
   font-weight: 500;
   color: var(--text-dark);

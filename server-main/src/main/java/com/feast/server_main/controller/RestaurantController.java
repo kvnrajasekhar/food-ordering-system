@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.feast.server_main.dto.FoodItemDTO;
 import com.feast.server_main.dto.ResFoodItemDTO;
 import com.feast.server_main.dto.RestaurantOrderStatusDTO;
+import com.feast.server_main.dto.UpdateOrderStatusRequestDTO;
 import com.feast.server_main.dto.UserDTO;
 import com.feast.server_main.model.FoodItem;
 import com.feast.server_main.model.Restaurant;
@@ -43,7 +44,7 @@ public class RestaurantController {
 	private static final Logger logger = LoggerFactory.getLogger(RestaurantController.class);
 
 	@PostMapping("/create")
-	public ResponseEntity<StandardResponse<User>> createRestaurant(
+	public ResponseEntity<StandardResponse<UserDTO>> createRestaurant(
 			@RequestParam("userId") Integer userId,
 			@RequestParam("restaurantName") String restaurantName,
 			@RequestParam("restaurantAddress") String restaurantAddress,
@@ -51,11 +52,11 @@ public class RestaurantController {
 			@RequestParam("ownerName") String ownerName) {
 		logger.info("Creating restaurant for userId: {}", userId);
 		try {
-			User user = restaurantService.createRestaurantForExistingUser(userId, restaurantName, restaurantAddress,
+			UserDTO user = restaurantService.createRestaurantForExistingUser(userId, restaurantName, restaurantAddress,
 					cuisine, ownerName);
 			logger.info("Restaurant created successfully for userId: {}", userId);
 			return new ResponseEntity<>(
-					new StandardResponse<>(HttpStatus.CREATED.value(), "Restaurant created successfully", user),
+					new StandardResponse<>(HttpStatus.CREATED.value(), "Restaurant created successfully",user),
 					HttpStatus.CREATED);
 		} catch (IllegalArgumentException e) {
 			logger.error("Error creating restaurant: {}", e.getMessage());
@@ -118,10 +119,10 @@ public class RestaurantController {
 	}
 
 	@PostMapping("/addItem")
-	public ResponseEntity<StandardResponse<FoodItem>> addFoodItem(@RequestBody FoodItem foodItem) {
+	public ResponseEntity<StandardResponse<FoodItemDTO>> addFoodItem(@RequestBody FoodItem foodItem) {
 		logger.info("Adding food item: {}", foodItem.getFoodName());
 		try {
-			FoodItem item = restaurantService.addFoodItem(foodItem);
+			FoodItemDTO item = restaurantService.addFoodItem(foodItem);
 			logger.info("Food item added successfully: {}", item.getFoodName());
 			return new ResponseEntity<>(
 					new StandardResponse<>(HttpStatus.CREATED.value(), "Food item added successfully", item),
@@ -133,10 +134,10 @@ public class RestaurantController {
 	}
 
 	@GetMapping("/items")
-	public ResponseEntity<StandardResponse<List<FoodItem>>> getAllItems() {
+	public ResponseEntity<StandardResponse<List<FoodItemDTO>>> getAllItems() {
 		logger.info("Getting all food items");
 		try {
-			List<FoodItem> items = restaurantService.getAllItems();
+			List<FoodItemDTO> items = restaurantService.getAllItems();	
 			logger.info("Retrieved {} food items", items.size());
 			return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "All food items retrieved", items),
 					HttpStatus.OK);
@@ -170,7 +171,7 @@ public class RestaurantController {
             @RequestBody FoodItem foodItem) {
         logger.info("Updating food item with ID: {}", foodItemId);
         try {
-            FoodItem updatedFoodItem = restaurantService.updateFoodItem(foodItemId, foodItem);
+            FoodItemDTO updatedFoodItem = restaurantService.updateFoodItem(foodItemId, foodItem);
             ResFoodItemDTO foodItemDTO = restaurantService.mapToResFoodDto(updatedFoodItem);
             logger.info("Food item updated successfully: {}", updatedFoodItem.getFoodName());
             return new ResponseEntity<>(
@@ -242,38 +243,22 @@ public class RestaurantController {
 		}
 	}
 
-	@PutMapping("/order/status")
+	@PutMapping("/order")
 	public ResponseEntity<StandardResponse<RestaurantOrderStatusDTO>> updateOrderStatus(
-	        @RequestBody Map<String, Object> requestBody) {
+	        @RequestBody UpdateOrderStatusRequestDTO requestBody) {
 	    logger.info("Updating order status with request body: {}", requestBody);
 	    try {
-	        // Extract order details
-	        Map<String, Object> orderMap = (Map<String, Object>) requestBody.get("order");
+	    	
 	        Integer orderId = null;
-	        if (orderMap != null && orderMap.containsKey("orderId")) {
-	            Object orderIdObj = orderMap.get("orderId");
-	            if (orderIdObj instanceof Integer) {
-	                orderId = (Integer) orderIdObj;
-	            } else if (orderIdObj instanceof String) {
-	                orderId = Integer.parseInt((String) orderIdObj);
-	            }
+	        if (requestBody.getOrder() != null) {
+	            orderId = requestBody.getOrder().getOrderId();
 	        }
 
-	        // Extract status
-	        String status = (String) requestBody.get("status");
+	        String status = requestBody.getStatus();
 
-	        // Extract restaurant ID
 	        Integer restaurantId = null;
-	        if (requestBody.containsKey("restaurant")) {
-	            Map<String, Object> restaurantMap = (Map<String, Object>) requestBody.get("restaurant");
-	            if (restaurantMap != null && restaurantMap.containsKey("restaurantId")) {
-	                Object resIdObj = restaurantMap.get("restaurantId");
-	                if (resIdObj instanceof Integer) {
-	                    restaurantId = (Integer) resIdObj;
-	                } else if (resIdObj instanceof String) {
-	                    restaurantId = Integer.parseInt((String) resIdObj);
-	                }
-	            }
+	        if (requestBody.getRestaurant() != null) {
+	            restaurantId = requestBody.getRestaurant().getRestaurantId();
 	        }
 
 	        if (orderId == null || status == null || restaurantId == null) {
@@ -285,9 +270,6 @@ public class RestaurantController {
 	        logger.info("Order status updated successfully for order ID: {}", orderId);
 	        return new ResponseEntity<>(
 	                new StandardResponse<>(HttpStatus.OK.value(), "Order status updated", updatedOrderStatus), HttpStatus.OK);
-	    } catch (NumberFormatException e) {
-	        logger.error("Error updating order status: Invalid ID format", e);
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID format.", e);
 	    } catch (IllegalArgumentException e) {
 	        logger.error("Error updating order status: {}", e.getMessage());
 	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

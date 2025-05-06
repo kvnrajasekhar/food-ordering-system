@@ -72,7 +72,7 @@ body {
     width: calc(var(--feature-icon-size) + 15px);
     height: calc(var(--feature-icon-size) + 15px);
     border-radius: 50%;
-    /* background-color: rgba(255, 193, 7, 0.15); Subtle background */
+
 }
 
 .features-section .card h3 {
@@ -88,15 +88,13 @@ body {
     margin-bottom: 0;
 }
 
-/* SVG Styling */
+
 .features-section .card-icon img {
     width: var(--feature-icon-size);
     height: var(--feature-icon-size);
     fill: var(--primary);
 }
 
-
-/* Hero Section */
 .hero {
     display: flex;
     flex-direction: column;
@@ -199,95 +197,25 @@ body {
 }
 
 
-/* items */
-/* .restaurant-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    margin-bottom: 20px;
-    transition: transform 0.3s ease-in-out;
-} */
-/* 
-.restaurant-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.restaurant-card img {
-    width: 100%;
-    height: 200px; 
-    object-fit: cover;
-    border-bottom: 1px solid #eee;
-}
-
-.restaurant-info {
-    padding: 20px;
-}
-
-.restaurant-info h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #333;
-    font-size: 1.5rem;
-}
-
-.restaurant-meta {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    color: #777;
-    font-size: 0.9rem;
-}
-
-.restaurant-meta .rating {
-    color: #ffc107; 
-    margin-right: 10px;
-}
-
-.restaurant-meta span:not(:last-child)::after {
-    content: " · "; 
-    margin: 0 8px;
-}
-
-.restaurant-info p {
-    color: #555;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 15px;
-} */
-
-
-
-
-
-/* Responsive Layout */
 .restaurant-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Single column by default */
+    grid-template-columns: 1fr;
     gap: 20px;
     padding: 20px;
 }
 
-/* Medium screens and up */
 @media (min-width: 768px) {
     .restaurant-grid {
-        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Large screens and up */
 @media (min-width: 992px) {
     .restaurant-grid {
-        grid-template-columns: repeat(3, 1fr); /* Three columns */
+        grid-template-columns: repeat(3, 1fr); 
     }
 }
 
-
-
-
-
-/*Main Restaurant Cards */
 #menu-items{
     display: flex;
     flex-wrap: wrap;

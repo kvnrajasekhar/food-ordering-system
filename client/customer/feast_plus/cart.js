@@ -96,6 +96,7 @@ $(document).ready(function () {
     if (items && items.length > 0) {
       emptyCartMessage.hide();
       orderSummary.show();
+      console.log("Items in cart:", items);
 
       $.each(items, function (index, item) {
         subtotal += item.foodItem.price * item.quantity;
@@ -201,11 +202,11 @@ $(document).ready(function () {
       });
     } else if (newQuantity === 0) {
       $.ajax({
-        url: `http://localhost:8081/customer/item/clear/${orderId}?userId=${userId}`, // Use the DELETE endpoint
+        url: `http://localhost:8081/customer/item/clear/${orderId}?userId=${userId}`, 
         method: "DELETE",
         success: function (response) {
           console.log("Item removed successfully for orderId:", orderId);
-          fetchCartItems(); // Refresh the cart display
+          fetchCartItems(); 
         },
         error: function (xhr, status, error) {
           console.error("Error removing item from cart:", error);
