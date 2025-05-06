@@ -41,7 +41,6 @@ $(document).ready(function () {
   console.log("userId:", userId);
 
   function fetchUserCart(callback) {
-    // Add a callback
     const userId = localStorage.getItem("userId");
     $.ajax({
       url: `http://localhost:8081/customer/cart?userId=${userId}`,
@@ -56,7 +55,7 @@ $(document).ready(function () {
           console.log("Fetched cart items:", cartResponse);
           if (cartResponse.length > 0) {
             cartRestaurantId =
-              cartResponse[0].foodItem.restaurant.restaurantId; // Set it here
+              cartResponse[0].foodItem.restaurant.restaurantId; 
             cartResponse.forEach((item) => {
               if (item.foodItem && item.foodItem.foodId) {
                 userCartItems.add(item.foodItem.foodId);
@@ -67,7 +66,7 @@ $(document).ready(function () {
         console.log("Fetched cart. cartRestaurantId:", cartRestaurantId);
         if (callback) {
           //check
-          callback(); // Call the callback function
+          callback(); 
         }
       },
       error: function (xhr, status, error) {
@@ -115,10 +114,8 @@ $(document).ready(function () {
           xhr.status +
           "' : Error fetching product data. Please try again.";
         localStorage.setItem("errmsg", errmsg);
-        // window.location.replace(`../layouts/404error.html`);
-        // setTimeout(function () {
-        //  messageContainer.fadeOut();
-        // }, 5000);
+         window.location.replace(`../layouts/404error.html`);
+
       },
     });
   }
@@ -138,13 +135,13 @@ $(document).ready(function () {
         ? "Already in Cart"
         : "Add to Cart";
       const isDisabledAttr = isDisabled ? "disabled-btn" : "";
-      // Use getResId here to fetch the restaurant ID
+
       getResId(product.foodId)
         .then(function (restaurantId) {
           console.log(
             "Restaurant ID for food item " + product.foodId + ":",
             restaurantId
-          ); // Add this line
+          ); 
           card.html(`
             <img src="${
               product.imageURL || "../products/img/default-food.jpg"
@@ -209,7 +206,7 @@ $(document).ready(function () {
         })
         .catch(function (error) {
           console.error("Error getting restaurant ID:", error);
-          // Handle the error appropriately, e.g., display a message to the user
+
           card.html(`
             <img src="${
               product.imageURL || "../products/img/default-food.jpg"
@@ -264,11 +261,11 @@ $(document).ready(function () {
         )
       ) {
         clearCart(userId, () => {
-          // Callback function to execute after the cart is cleared
-          cartRestaurantId = clickedRestaurantId; //update
+
+          cartRestaurantId = clickedRestaurantId;
           addItemToOrder(foodId, buttonElement, price, userId);
           fetchUserCart(() => {
-            //refresh
+        
             fetchAndRenderProducts(restaurantId);
           });
         });
@@ -276,7 +273,7 @@ $(document).ready(function () {
         return;
       }
     } else {
-      cartRestaurantId = clickedRestaurantId; //update
+      cartRestaurantId = clickedRestaurantId;
       addItemToOrder(foodId, buttonElement, price, userId);
     }
   }
@@ -317,7 +314,7 @@ $(document).ready(function () {
           xhr.status +
           "' : Error adding item to order. Please try again.";
         localStorage.setItem("errmsg", errmsg);
-        // window.location.href = `../layouts/404error.html`;
+        window.location.href = `../layouts/404error.html`;
       },
     });
   }
@@ -344,19 +341,18 @@ $(document).ready(function () {
     });
   }
 
-  // Function to get restaurant ID by food item ID
   function getResId(foodId) {
     return new Promise(function (resolve, reject) {
       $.ajax({
-        url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`, // Corrected URL
+        url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`,
         method: "GET",
         dataType: "json",
         success: function (response) {
-          console.log("Response from getResId:", response); // Add this line
+          console.log("Response from getResId:", response);
           if (response && response.details) {
-            resolve(response.details); // Resolve with the restaurant ID from the response.
+            resolve(response.details);
           } else {
-            reject(new Error("Restaurant ID not found in response")); // Reject if data is missing
+            reject(new Error("Restaurant ID not found in response")); 
           }
         },
         error: function (xhr, status, error) {
@@ -364,13 +360,13 @@ $(document).ready(function () {
             new Error(
               "Error fetching restaurant ID: " + xhr.status + " - " + error
             )
-          ); // Reject with the error
+          ); 
         },
       });
     });
   }
 
   fetchUserCart(() => {
-    fetchAndRenderProducts(restaurantId); // Call this *after* cart data is loaded
+    fetchAndRenderProducts(restaurantId); 
   });
 });

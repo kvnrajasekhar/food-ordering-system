@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "RestaurantOrderStatus")
 public class RestaurantOrderStatus {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_status_generator")
+    @SequenceGenerator(name = "order_status_generator", sequenceName = "order_status_sequence", allocationSize = 1)
     @Column(name = "RestaurantOrderStatusId")
     private Integer restaurantOrderStatusId;
 

@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "FoodItems")
 public class FoodItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fooditems_generator")
+    @SequenceGenerator(name = "fooditems_generator", sequenceName = "fooditems_sequence", allocationSize = 1)
     @Column(name = "FoodId")
     private Integer foodId;
 

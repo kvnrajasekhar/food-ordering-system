@@ -15,7 +15,7 @@ import com.feast.server_main.repository.UserRepository;
 
 @Service
 public class AuthService {
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class); // Initialize logger
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class); 
 
     @Autowired
     private UserRepository userRepository;
@@ -46,27 +46,27 @@ public class AuthService {
         newUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         User savedUser = userRepository.save(newUser);
-        logger.info("User signed up successfully: {}", savedUser.getEmail()); // Log successful signup
+        logger.info("User signed up successfully: {}", savedUser.getEmail()); 
         return savedUser;
     }
 
     public UserDTO login(User currUser) {
         String email = currUser.getEmail();
-        logger.info("Received login request for email: {}", email); // Use logger
+        logger.info("Received login request for email: {}", email);
         User user = null;
         try {
             user = userRepository.getByEmail(email);
         } catch (EmptyResultDataAccessException e) {
-            logger.error("User not found for email: {}", email); // Log error
+            logger.error("User not found for email: {}", email); 
             throw new NotFoundException("User not found");
         }
-        logger.debug("Encoded password from DB: {}", user.getPassword()); // Use logger and debug
-        logger.debug("Raw password from request: {}", currUser.getPassword()); // Use logger and debug
+        logger.debug("Encoded password from DB: {}", user.getPassword());
+        logger.debug("Raw password from request: {}", currUser.getPassword()); 
         if (bCryptPasswordEncoder.matches(currUser.getPassword(), user.getPassword())) {
-            logger.info("Login successful for user: {}", email); // Log successful login
+            logger.info("Login successful for user: {}", email); 
             return convertToDto(user);
         } else {
-            logger.warn("Invalid password for user: {}", email); // Log warning
+            logger.warn("Invalid password for user: {}", email); 
             throw new NotFoundException("Invalid password");
         }
     }

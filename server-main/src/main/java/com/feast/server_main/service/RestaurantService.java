@@ -46,11 +46,11 @@ public class RestaurantService {
 
 	
 	@Transactional
-	public User createRestaurantForExistingUser(Integer userId, String restaurantName, String restaurantAddress,
+	public UserDTO createRestaurantForExistingUser(Integer userId, String restaurantName, String restaurantAddress,
 			String cuisine, String ownerName) {
 
 		User user = userRepository.findByUserId(userId);
-		// 2. Check if the user already has a restaurant.
+	
 		if (user.getRestaurant() != null) {
 			throw new IllegalStateException("User with ID " + userId + " already has a restaurant.");
 		}
@@ -66,7 +66,7 @@ public class RestaurantService {
 		user.setRestaurant(restaurant);
 		userRepository.save(user);
 
-		return user; // Return the DTO
+		return convertToUserDTO(user); 
 	}
 
 	private UserDTO convertToUserDTO(User user) {
@@ -97,9 +97,11 @@ public class RestaurantService {
 		return restaurant.map(Restaurant::getRestaurantId);
 	}
 
-	public List<FoodItem> getAllItems() {
+	public List<FoodItemDTO> getAllItems() {
 		List<FoodItem> items = foodItemRepository.findAll();
-		return items;
+		return items.stream()
+                .map(this::mapFoodItemToDTO)
+                .collect(Collectors.toList());
 	}
 
 	public List<ResFoodItemDTO> getFoodItemsByRestaurant(Integer restaurantId) {
@@ -108,13 +110,13 @@ public class RestaurantService {
 	}
 
 	@Transactional
-	public FoodItem addFoodItem(FoodItem foodItem) {
+	public FoodItemDTO addFoodItem(FoodItem foodItem) {
 		FoodItem savedFoodItem = foodItemRepository.save(foodItem);
-		return savedFoodItem;
+		return mapFoodItemToDTO(savedFoodItem);
 	}
 
 	@Transactional
-	public FoodItem updateFoodItem(Integer foodItemId, FoodItem foodItem) {
+	public FoodItemDTO updateFoodItem(Integer foodItemId, FoodItem foodItem) {
 		FoodItem existingFoodItem = foodItemRepository.findById(foodItemId)
 				.orElseThrow(() -> new IllegalArgumentException("Food Item not found with ID: " + foodItemId));
 
@@ -125,7 +127,7 @@ public class RestaurantService {
 		existingFoodItem.setImageURL(foodItem.getImageURL());
 		existingFoodItem.setRating(foodItem.getRating());
 
-		return foodItemRepository.save(existingFoodItem);
+		return convertToDto(foodItemRepository.save(existingFoodItem));
 	}
 
 	public FoodItemDTO convertToDto(FoodItem foodItem) {
@@ -135,6 +137,11 @@ public class RestaurantService {
 	}
 	
 	public ResFoodItemDTO mapToResFoodDto(FoodItem foodItem) {
+		return new ResFoodItemDTO(foodItem.getFoodId(), foodItem.getFoodName(), foodItem.getFoodType(),
+				foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(), foodItem.getRating()
+				);
+	}
+	public ResFoodItemDTO mapToResFoodDto(FoodItemDTO foodItem) {
 		return new ResFoodItemDTO(foodItem.getFoodId(), foodItem.getFoodName(), foodItem.getFoodType(),
 				foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(), foodItem.getRating()
 				);
@@ -218,12 +225,12 @@ public class RestaurantService {
         return mapResOrderToDTO(orderStatusToSave);
     }
 	
-	private UserDTO convertUserToDto(User user) {
+	public UserDTO convertUserToDto(User user) {
 		return new UserDTO(user.getUserId(), user.getUserName(), user.getEmail(), user.getPhoneNumber(),
 				user.getAddress(), user.getRole());
 	}
 	
-	private FoodItemDTO mapFoodItemToDTO(FoodItem foodItem) {
+	public FoodItemDTO mapFoodItemToDTO(FoodItem foodItem) {
 		return new FoodItemDTO(foodItem.getFoodId(), foodItem.getFoodName(), foodItem.getFoodType(),
 				foodItem.getDescription(), foodItem.getPrice(), foodItem.getImageURL(), foodItem.getRating(),
 				mapRestaurantToDTO(foodItem.getRestaurant()));

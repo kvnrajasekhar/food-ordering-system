@@ -123,7 +123,6 @@ $(document).ready(function () {
           $card.find(".item-order-btn").on("click", function (event) {
             event.preventDefault();
             const foodId = $(this).data("food-id");
-            // Call getResId to get the restaurant ID
             getResId(foodId)
               .then(function (restaurantId) {
                 localStorage.setItem("restaurantId", restaurantId);
@@ -133,7 +132,7 @@ $(document).ready(function () {
                 console.error("Error getting restaurant ID:", error);
                 alert(
                   "Failed to retrieve restaurant information. Please try again."
-                ); // basic error alert
+                ); 
               });
           });
         });
@@ -148,18 +147,17 @@ $(document).ready(function () {
     });
   }
 
-  // Function to get restaurant ID by food item ID
   function getResId(foodId) {
     return new Promise(function (resolve, reject) {
       $.ajax({
-        url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`, // Corrected URL
+        url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`, 
         method: "GET",
         dataType: "json",
         success: function (response) {
           if (response && response.details) {
-            resolve(response.details); // Resolve with the restaurant ID from the response
+            resolve(response.details); 
           } else {
-            reject(new Error("Restaurant ID not found in response")); // Reject if data is missing
+            reject(new Error("Restaurant ID not found in response")); 
           }
         },
         error: function (xhr, status, error) {
@@ -251,7 +249,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const userId = localStorage.getItem("userId");
     console.log("User Id from local storage:", userId);
 
-    // Add event listeners to the "View Menu" buttons after they are rendered
     $(".view-menu-btn").each(function () {
       $(this).on("click", function () {
         const restaurantId = $(this).data("restaurant-id");

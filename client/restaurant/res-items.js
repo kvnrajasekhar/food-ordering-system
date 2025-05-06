@@ -280,10 +280,12 @@ $(document).ready(function () {
                   );
                   if (indexToUpdate !== -1) {
                       fooditem[indexToUpdate] = updatedItem;
+                      fetchFoodItems();
                       renderProducts(fooditem);
                   }
               } else {
                   fooditem.push(updatedItem);
+                  fetchFoodItems();
                   renderProducts(fooditem);
               }
               $editItemModal.modal("hide");

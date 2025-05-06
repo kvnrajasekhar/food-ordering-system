@@ -184,12 +184,10 @@ public class UserService {
 
 	@Transactional
 	public RestaurantOrderStatusDTO updateOrderStatus(RestaurantOrderStatus orderStatusDTO) {
-		// 1. Extract data from orderStatusDTO
 		Order orderDTOOrder = orderRepository.findByOrderId(orderStatusDTO.getOrder().getOrderId());
 		Restaurant restaurant = restaurantRepository
 				.findByRestaurantId(orderStatusDTO.getRestaurant().getRestaurantId());
 		String status = orderStatusDTO.getStatus();
-		// 2. Validate data
 		if (restaurant == null || status == null || orderDTOOrder == null) {
 			throw new IllegalArgumentException("Missing required order details.");
 		}

@@ -17,13 +17,11 @@ $(document).ready(function () {
     console.log("Email:", email);
     console.log("Password:", password);
 
-    // 2. Create the data object
     const data = {
       email: email,
       password: password,
     };
 
-    // 3. Set up the AJAX request.
     $.ajax({
       type: "POST",
       url: "http://localhost:8081/login",
@@ -60,8 +58,8 @@ $(document).ready(function () {
           errorMessage = "Forbidden. Please check your access rights.";
         }
         localStorage.setItem("errmsg", "Login failed: " + errorMessage);
-        // window.location.href = "./404error.html";
-        alert(errorMessage); // Show error to user
+        window.location.href = "./404error.html";
+        alert(errorMessage); 
       },
     });
   });

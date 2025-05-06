@@ -31,7 +31,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-direction: column; /* To stack the signboard and text */
+        flex-direction: column; 
       }
 
       .signboard-wrapper {
@@ -168,10 +168,6 @@
         id="error-message-div"
       ></div>
       <script>
-        // window.addEventListener("beforeunload", () => {
-        //   // Clear the local storage
-        //   localStorage.removeItem("errmsg");
-        // });
         const errorMessage = localStorage.getItem("errmsg");
         $("#error-message-div").text(errorMessage);
       </script>

@@ -6,9 +6,11 @@ import jakarta.persistence.*;
 @Table(name = "restaurants")
 public class Restaurant {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "restaurants_generator")
+    @SequenceGenerator(name = "restaurants_generator", sequenceName = "restaurants_sequence", allocationSize = 1)
     @Column(name = "RestaurantId")
     private Integer restaurantId;
+    
     
     @OneToOne
     @JoinColumn(name = "UserId", unique = true) 

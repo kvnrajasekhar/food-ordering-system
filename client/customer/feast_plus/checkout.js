@@ -73,14 +73,13 @@ $(document).ready(function () {
                   response.razorpay_payment_id
               );
 
-              //construct RestaurantOrderStatus object
               sendOrderUpdate(orderDetails);
               const orderId = orderDetails.order.orderId;
 
               localStorage.setItem("orderId", orderId);
 
               console.log("re directing Order ID:", orderId);
-              // clearCart(); // Call clearCart here
+
               window.location.href = `../delivery/delivery.html`;
             },
             prefill: {
@@ -217,7 +216,7 @@ $(document).ready(function () {
           "' : Error updating order status: " +
           status;
         localStorage.setItem("errmsg", errmsg);
-        // window.location.href = `../layouts/404error.html`;
+        window.location.href = `../layouts/404error.html`;
       },
     });
   }
@@ -246,29 +245,6 @@ $(document).ready(function () {
     return orderDetails;
   }
 
-  // function clearCart() {
-  //   const userId = localStorage.getItem("userId");
-  //   $.ajax({
-  //       url: `http://localhost:8081/customer/cart/clear?userId=${userId}`, // Corrected URL
-  //       method: "DELETE",
-  //       success: function (response) {
-  //           console.log("Cart cleared successfully");
-  //       },
-  //       error: function (xhr, status, error) {
-  //           console.error("Error clearing cart:", xhr, status, error); // Improved error logging
-  //           let errmsg = "Failed to clear cart. Please try again.";
-  //           if (xhr.responseJSON && xhr.responseJSON.message) {
-  //               errmsg = "Status Code '" + xhr.status + "' : " + xhr.responseJSON.message;  
-  //           } else {
-  //                errmsg = "Status Code '" + xhr.status + "' : Failed to clear cart. Please try again.";
-  //           }
-  //           localStorage.setItem("errmsg", errmsg);
-  //           window.location.href = `../layouts/404error.html`;
-  //           alert("Failed to clear cart.");
-  //       },
-  //   });
-    
-  // }
-
+  
   fetchCartItems();
 });

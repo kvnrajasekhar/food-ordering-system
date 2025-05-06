@@ -48,23 +48,20 @@ body {
   font-weight: 500;
 }
 
-#order-status-text{
-  color: var(--primary);
-}
-.order-status.partner_yet_to_assign {
-  background-color: #6c757d;
+.preparing, .accepted {
+  color: #007bff;
 }
 
-.order-status.partner_assigned {
-  background-color: #007bff;
+.cooked {
+  color: #17a2b8;
 }
 
-.order-status.on_the_way {
-  background-color: #28a745;
+.out_for_delivery {
+  color: #28a745; 
 }
 
-.order-status.delivered {
-  background-color: #17a2b8;
+.delivered {
+  color: #17a2b8; 
 }
 
 .order-details {
