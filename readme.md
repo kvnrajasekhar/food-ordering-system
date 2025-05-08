@@ -119,8 +119,6 @@ This Food Ordering Application provides a robust and scalable solution for manag
 ![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurants.png)
 ### Footer
 ![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/footer.png)
-### Restaurant Products
-![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant%20products.png)
 ### Empty Cart
 ![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/empty%20cart.png)
 ### Items
