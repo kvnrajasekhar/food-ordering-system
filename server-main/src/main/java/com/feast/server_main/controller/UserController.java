@@ -1,12 +1,13 @@
 package com.feast.server_main.controller;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.feast.server_main.dto.CusOrderDTO;
-import com.feast.server_main.dto.FoodItemDTO;
 import com.feast.server_main.dto.OrderDTO;
 import com.feast.server_main.dto.ResFoodItemDTO;
 import com.feast.server_main.dto.RestaurantDTO;
 import com.feast.server_main.dto.RestaurantOrderStatusDTO;
 import com.feast.server_main.dto.UserDTO;
-import com.feast.server_main.model.Order;
+
 import com.feast.server_main.model.RestaurantOrderStatus;
+
 import com.feast.server_main.response.StandardResponse;
+
 import com.feast.server_main.service.UserService;
 
 @RestController
@@ -54,12 +56,12 @@ public class UserController {
     }
     
     @GetMapping("/food-items/{foodItemId}/restaurant")
-    public ResponseEntity<StandardResponse<Integer>> getRestaurantIdByFoodItemId(@PathVariable Integer foodItemId) {
+    public ResponseEntity<StandardResponse<RestaurantDTO>> getRestaurantIdByFoodItemId(@PathVariable Integer foodItemId) {
         logger.info("Getting restaurant ID for food item ID: {}", foodItemId);
         try {
-            Integer restaurantId = userService.getRestaurantIdByFoodItemId(foodItemId);
-            logger.info("Retrieved restaurant ID: {} for food item ID: {}", restaurantId, foodItemId);
-            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", restaurantId), HttpStatus.OK);
+            RestaurantDTO restaurantData = userService.getRestaurantDetailsByFoodItemId(foodItemId);
+            logger.info("Retrieved restaurant ID: {} for food item ID: {}", restaurantData, foodItemId);
+            return new ResponseEntity<>(new StandardResponse<>(HttpStatus.OK.value(), "Success", restaurantData), HttpStatus.OK);
         } catch (IllegalArgumentException e) { 
             logger.warn("Food item with ID {} not found.", foodItemId);
             return new ResponseEntity<>(new StandardResponse<>(HttpStatus.NOT_FOUND.value(), "Food item not found", null), HttpStatus.NOT_FOUND);

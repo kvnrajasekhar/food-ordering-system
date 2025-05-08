@@ -54,7 +54,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CREATED).body(signedUpUser); // Use 201 Created
         } catch (IllegalArgumentException e) {
             logger.error("Signup failed: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or .build()
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 }

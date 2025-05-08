@@ -8,7 +8,10 @@ $(document).ready(function () {
       input.attr("type", "password");
     }
   });
-
+  localStorage.removeItem("restaurantName");
+  localStorage.removeItem("restaurantId");
+  localStorage.removeItem("foodId");
+  localStorage.removeItem("orderId");
   $("#loginForm").submit(function (event) {
     event.preventDefault();
     const email = $("#email").val();
@@ -22,7 +25,7 @@ $(document).ready(function () {
       password: password,
     };
 
-    $.ajax({
+      $.ajax({
       type: "POST",
       url: "http://localhost:8081/login",
       contentType: "application/json", 
@@ -58,7 +61,7 @@ $(document).ready(function () {
           errorMessage = "Forbidden. Please check your access rights.";
         }
         localStorage.setItem("errmsg", "Login failed: " + errorMessage);
-        window.location.href = "./404error.html";
+        // window.location.href = "./404error.html";
         alert(errorMessage); 
       },
     });

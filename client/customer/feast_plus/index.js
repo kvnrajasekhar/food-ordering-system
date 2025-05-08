@@ -123,9 +123,10 @@ $(document).ready(function () {
           $card.find(".item-order-btn").on("click", function (event) {
             event.preventDefault();
             const foodId = $(this).data("food-id");
-            getResId(foodId)
-              .then(function (restaurantId) {
-                localStorage.setItem("restaurantId", restaurantId);
+            getResDetails(foodId)
+              .then(function (restaurant) {
+                localStorage.setItem("restaurantId", restaurant.restaurantId);
+                localStorage.setItem("restaurantName", restaurant.restaurantName);
                 window.location.href = "../products/product.html";
               })
               .catch(function (error) {
@@ -147,7 +148,7 @@ $(document).ready(function () {
     });
   }
 
-  function getResId(foodId) {
+  function getResDetails(foodId) {
     return new Promise(function (resolve, reject) {
       $.ajax({
         url: `http://localhost:8081/customer/food-items/${foodId}/restaurant`, 
@@ -238,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <h5 class="card-title restaurant-name">${restaurant.restaurantName}</h5>
               <p class="card-text restaurant-address">Address: ${restaurant.address}</p>
               <p class="card-text restaurant-cuisine">Cuisine: ${restaurant.cuisine}</p>
-              <button class="btn view-menu-btn view-menu" data-restaurant-id="${restaurant.restaurantId}">View Menu</button>
+              <button class="btn view-menu-btn view-menu" data-restaurant-id="${restaurant.restaurantId}" data-restaurant-name="${restaurant.restaurantName}">View Menu</button>
             </div>
           </div>
         `);
@@ -252,6 +253,8 @@ document.addEventListener("DOMContentLoaded", () => {
     $(".view-menu-btn").each(function () {
       $(this).on("click", function () {
         const restaurantId = $(this).data("restaurant-id");
+        const restaurantName = $(this).data("restaurant-name");
+        localStorage.setItem("restaurantName", restaurantName);
         localStorage.setItem("restaurantId", restaurantId);
         window.location.href = `/client/customer/products/product.html`;
       });

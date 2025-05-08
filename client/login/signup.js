@@ -65,8 +65,12 @@ $("#signupForm").submit(function (event) {
     },
     error: function (xhr, status, error) {
       console.error("Signup error:", xhr.responseText);
-      if (xhr.responseJSON && xhr.responseJSON.message) {
-        window.location.href = "../layouts/404error.html"; 
+      if (xhr.status === 400) {
+        errorMessage = "User with same mail already exits!.";
+        alert(errorMessage);
+      }
+      else if (xhr.responseJSON && xhr.responseJSON.message) {
+        window.location.href = "./404error.html"; 
         console.log("Signup error: " + xhr.responseJSON.message); 
       } else {
         alert("An error occurred during signup. Please try again later.");

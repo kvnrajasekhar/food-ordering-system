@@ -63,7 +63,7 @@
         const userRole = localStorage.getItem("userRole");
         if (userRole !== "restaurant") {
           localStorage.setItem("errmsg", "Customer is not a restaurant owner.");
-          window.location.href = "../layouts/404error.html";
+          window.location.href = "./layouts/404error.html";
         }
         fetch("./layouts/nav.html")
           .then((response) => response.text())
@@ -95,7 +95,7 @@
         if (!restaurantId) {
           const errmsg = "Missing Restaurant Information! Please login again.";
           localStorage.setItem("errmsg", errmsg);
-          window.location.href = `../layouts/404error.html`;
+          window.location.href = `./layouts/404error.html`;
           return;
         }
 
@@ -114,7 +114,7 @@
               console.error("Error fetching orders:", error);
               const errmsg = status + "! Error fetching orders ";
               localStorage.setItem("errmsg", errmsg);
-              window.location.href = `../layouts/404error.html`;
+              window.location.href = `./layouts/404error.html`;
             },
           });
         }
@@ -150,7 +150,7 @@
                 xhr.status +
                 "' : Error fetching ordered items.";
               localStorage.setItem("errmsg", errmsg);
-              window.location.href = `../layouts/404error.html`;
+              window.location.href = `./layouts/404error.html`;
               emptyCartMessage.hide();
               orderSummary.hide();
             },
@@ -315,7 +315,7 @@
               console.error("Error updating order status:", error);
               const errmsg = status + "! Error updating order status ";
               localStorage.setItem("errmsg", errmsg);
-              // window.location.href = `../layouts/404error.html`;
+              // window.location.href = `./layouts/404error.html`;
               alert("Failed to update order status.  Please try again.");
             },
           });

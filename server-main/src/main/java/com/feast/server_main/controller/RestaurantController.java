@@ -1,14 +1,16 @@
 package com.feast.server_main.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +28,11 @@ import com.feast.server_main.dto.ResFoodItemDTO;
 import com.feast.server_main.dto.RestaurantOrderStatusDTO;
 import com.feast.server_main.dto.UpdateOrderStatusRequestDTO;
 import com.feast.server_main.dto.UserDTO;
+
 import com.feast.server_main.model.FoodItem;
-import com.feast.server_main.model.Restaurant;
-import com.feast.server_main.model.RestaurantOrderStatus;
-import com.feast.server_main.model.User;
+
 import com.feast.server_main.service.*;
+
 import com.feast.server_main.response.StandardResponse; 
 
 @RestController
@@ -278,7 +280,6 @@ public class RestaurantController {
 	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to update order status", e);
 	    }
 	}
-    
 
 	// Get all order status
 	@GetMapping("/order/status/all")

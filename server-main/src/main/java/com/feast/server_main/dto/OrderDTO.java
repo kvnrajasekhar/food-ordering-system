@@ -2,10 +2,6 @@ package com.feast.server_main.dto;
 
 import java.time.LocalDateTime;
 
-import com.feast.server_main.model.FoodItem;
-import com.feast.server_main.model.User;
-
-
 public class OrderDTO {
 
     private Integer orderId;

@@ -20,6 +20,9 @@ body {
   max-width: 1200px;
 }
 
+#restaurant-name{
+  color: var(--primary);
+}
 .filter-buttons {
   margin-bottom: 20px;
   text-align: center;
