@@ -62,25 +62,24 @@ The application exposes the following API endpoints:
 
 ### 6.1 User API Endpoints
 
-* `POST /register`: Registers a new user.
+* `POST /signup`: Registers a new user.
 * `POST /login`: Logs in a user.
-* `GET /customer/{userId}`: Retrieves user details.
-* `PUT /customer/{userId}`: Updates user details.
-* `POST /customer/{userId}/address`: Adds a new address for the user.
-* `GET /customer/{userId}/orders`: Retrieves order history for a user.
+* `GET /customer/profile/${userId}`: Retrieves user details.
+* `PUT /customer/profile/edit/${userId}`: Updates user details.
+* `POST /customer/customer/restaurants/${restaurantId}/food-items`: Shows Food Items of a Restaurant
+* `GET /customer/customer/order`: Places order for a user.
+* `POST /customer/cart?userId=${userId}`: Returns the cart of user
 
 ### 6.2 Restaurant API Endpoints
 
-* `POST /restaurant/register`: Registers a new restaurant.
-* `POST /restaurant/login`: Logs in a restaurant.
-* `GET /restaurant/{restaurantId}`: Retrieves restaurant details.
-* `PUT /restaurant/{restaurantId}`: Updates restaurant details.
-* `GET /restaurant/{restaurantId}/menu`: Retrieves the menu for a restaurant.
-* `POST /restaurant/{restaurantId}/menu`: Adds a new food item to the menu.
-* `PUT /restaurant/menu/{foodItemId}`: Updates a food item in the menu.
-* `DELETE /restaurant/menu/{foodItemId}`: Deletes a food item from the menu.
+* `POST /restaurant/create`: Registers a new restaurant.
+* `POST /login`: Logs in a restaurant.
+* `GET /restaurant/{restaurantId}/food-items`: Retrieves the menu for a restaurant.
+* `POST /restaurant/addItem`: Adds a new food item to the menu.
+* `PUT /restaurant/food-item/${currentEditItemId}`: Updates a food item in the menu.
+* `DELETE /restaurant/food-item/${productIdToRemove}`: Deletes a food item from the menu.
 * `GET /restaurant/order/{restaurantId}/statuses`: Retrieves all orders for a restaurant.
-* `PUT /restaurant/order/status`: Updates the status of an order.
+* `PUT /restaurant/order`: Updates the status of an order.
 
 ### 6.3 Order API Endpoints
 * `POST /order`: Places a new order.
@@ -109,3 +108,39 @@ The following enhancements are planned for future releases:
 ## 9.  Conclusion
 
 This Food Ordering Application provides a robust and scalable solution for managing food orders.  It offers a user-friendly interface for customers and efficient order management tools for restaurants.
+
+
+## Screenshots
+### Home Page
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/home%20page.png)
+### Food Items
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/food%20filters.png)
+### Restaurants
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurants.png)
+### Footer
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/footer.png)
+### Restaurant Products
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant%20products.png)
+### Empty Cart
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/empty%20cart.png)
+### Items
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant%20products.png)
+### Cart
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/cart%20items.png)
+### Checkout
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/checkout%20.png)
+### Payment
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/payment.png)
+### Delivery Page -1
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/delivery-1.png)
+### Restaurant Home 
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant-home.png)
+### Restaurant Products
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant-producrs.png)
+### Restaurant Menu Management
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/add-items.png)
+### Restaurant Orders
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/restaurant-orders.png)
+### Delivery Page Out For Delivery
+![alt text](https://github.com/kvnrajasekhar/food-ordering-system/blob/main/screenshots/delivery-2.png)
+
