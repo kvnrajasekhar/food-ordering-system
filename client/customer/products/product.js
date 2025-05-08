@@ -142,10 +142,10 @@ console.log("Restaurant Name:", restaurantName);
       const isDisabledAttr = isDisabled ? "disabled-btn" : "";
 
       getResId(product.foodId)
-        .then(function (restaurantId) {
+        .then(function (restaurant) {
           console.log(
             "Restaurant ID for food item " + product.foodId + ":",
-            restaurantId
+            restaurant.restaurantId
           ); 
           card.html(`
             <img src="${
@@ -170,7 +170,7 @@ console.log("Restaurant Name:", restaurantName);
               }</p>
               <button class="add-to-cart-btn product-details-btn ${isDisabledAttr}" data-food-id="${
                 product.foodId
-              }" data-restaurant-id="${restaurantId}" ${
+              }" data-restaurant-id="${restaurant.restaurantId}" ${
                 isDisabled ? "disabled" : ""
               }>${buttonText}</button>
             </div>
@@ -181,7 +181,9 @@ console.log("Restaurant Name:", restaurantName);
             .find(".add-to-cart-btn:not(:disabled)")
             .on("click", function () {
               const foodId = $(this).data("food-id");
+              console.log("foodId:", foodId);
               const clickedRestaurantId = $(this).data("restaurant-id");
+              console.log("clickedRestaurantId:", clickedRestaurantId.details);
               const productCard = $(this).closest(".product-card");
               const priceElement = productCard.find(".price");
               let price = null;

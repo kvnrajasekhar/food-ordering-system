@@ -25,7 +25,7 @@ $(document).ready(function () {
       password: password,
     };
 
-    $.ajax({
+      $.ajax({
       type: "POST",
       url: "http://localhost:8081/login",
       contentType: "application/json", 
@@ -61,7 +61,7 @@ $(document).ready(function () {
           errorMessage = "Forbidden. Please check your access rights.";
         }
         localStorage.setItem("errmsg", "Login failed: " + errorMessage);
-        window.location.href = "./404error.html";
+        // window.location.href = "./404error.html";
         alert(errorMessage); 
       },
     });
